@@ -1,6 +1,12 @@
 # Nombre del proyecto
 
-Application to be awesome
+Asistente de toma de fotos
+
+## Tech Stack
+
+* [Swift](https://developer.apple.com/swift/)
+* [UIKit - Core Image](https://developer.apple.com/documentation/uikit/uiimage)
+* AVK
 
 ## Table of contents
 
@@ -21,7 +27,7 @@ Application to be awesome
 
 | Name               | Email             | Role |
 | ------------------ | ----------------- | ---- |
-| Nombre del cliente | prueba@prueba.com | CEO  |
+| Gerardo Guadalupe Garza | C.GGARZC@ternium.com.mx | Product Owner  |
 
 
 ### Environment URLS
@@ -33,9 +39,9 @@ Application to be awesome
 
 | Name           | Email             | Role        |
 | -------------- | ----------------- | ----------- |
-| Nombre miembro | prueba@prueba.com | Development |
-| Nombre miembro | prueba@prueba.com | Development |
-| Nombre miembro | prueba@prueba.com | Development |
+| Obed Gonzalez | A01382900@itesm.mx | Product Owner Proxy |
+| German Villacorta | germanvillapa9@gmail.com | Project Manager |
+| Luis Erick Zul | A00818663@itesm.mx | Scrum Master |
 
 ### Management tools
 
@@ -77,7 +83,7 @@ $ plis run web bash
 
 ### Running the stack for Development
 
-1. Fire up a terminal and run: 
+1. Fire up a terminal and run:
 
 ```
 plis start
