@@ -1,0 +1,1 @@
+# asistente-toma-de-fotos
