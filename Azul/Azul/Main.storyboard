@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="khM-ja-ebN">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="khM-ja-ebN">
     <device id="ipad12_9rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -15,19 +15,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3aO-a0-wvi" customClass="PreviewView" customModule="Azul" customModuleProvider="target">
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4dh-Z2-QyW" customClass="PreviewView" customModule="Azul" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bEy-Pk-yLx">
-                                        <rect key="frame" x="1258" y="927" width="46" height="30"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <state key="normal" title="Button"/>
-                                        <connections>
-                                            <action selector="capturePhoto:" destination="khM-ja-ebN" eventType="touchUpInside" id="bSO-aT-UHh"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             </view>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DIe-IK-2G3" userLabel="Info Icon">
@@ -54,6 +44,17 @@
                                 <rect key="frame" x="1218" y="475" width="128" height="128"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bEy-Pk-yLx">
+                                <rect key="frame" x="1244" y="902.5" width="76" height="74"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="76" id="FIf-4a-ZCJ"/>
+                                    <constraint firstAttribute="height" constant="75" id="JiN-p5-w4l"/>
+                                </constraints>
+                                <state key="normal" backgroundImage="camera.circle.fill" catalog="system"/>
+                                <connections>
+                                    <action selector="capturePhoto:" destination="khM-ja-ebN" eventType="touchUpInside" id="bSO-aT-UHh"/>
+                                </connections>
+                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zeq-i2-RRA" userLabel="Message">
                                 <rect key="frame" x="493" y="47" width="380" height="74"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -82,13 +83,17 @@
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="Rvs-98-mkw" firstAttribute="trailing" secondItem="bEy-Pk-yLx" secondAttribute="trailing" constant="46" id="Azn-j7-NDP"/>
+                            <constraint firstItem="Rvs-98-mkw" firstAttribute="bottom" secondItem="bEy-Pk-yLx" secondAttribute="bottom" constant="27" id="HzT-Id-dOA"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="Rvs-98-mkw"/>
                     </view>
                     <connections>
                         <outlet property="btnCancel" destination="mOM-Cy-Oj1" id="3sA-Rm-tT5"/>
                         <outlet property="btnTakePhoto" destination="bEy-Pk-yLx" id="05n-iz-rG6"/>
                         <outlet property="lblMessage" destination="Zeq-i2-RRA" id="AHm-XL-V08"/>
-                        <outlet property="previewView" destination="3aO-a0-wvi" id="cV9-8J-4eb"/>
+                        <outlet property="previewView" destination="4dh-Z2-QyW" id="5yG-26-Y5d"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="w7o-F1-ixx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -96,4 +101,7 @@
             <point key="canvasLocation" x="138.79941434846265" y="137.6953125"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="camera.circle.fill" catalog="system" width="64" height="60"/>
+    </resources>
 </document>

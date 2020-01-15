@@ -10,7 +10,16 @@ import UIKit
 import AVFoundation
 import Photos
 
-class CameraViewController: UIViewController {
+class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelegate  {
+    
+    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+        // Enable the Record button to let the user stop recording.
+        DispatchQueue.main.async {
+            self.btnTakePhoto.isEnabled = true
+            self.btnTakePhoto.setImage(#imageLiteral(resourceName: "CaptureStop"), for: [])
+        }
+    }
+    
     
     @IBOutlet weak var lblMessage: UILabel!
     @IBOutlet weak var btnTakePhoto: UIButton!
@@ -35,9 +44,104 @@ class CameraViewController: UIViewController {
         return view.window?.windowScene?.interfaceOrientation ?? .unknown
     }
     
+    // MARK: View Controller Life Cycle
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        previewView.session = session
+        
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+            case .authorized: // The user has previously granted access to the camera.
+                break
+            
+            case .notDetermined: // The user has not yet been asked for camera access.
+                sessionQueue.suspend()
+                AVCaptureDevice.requestAccess(for: .video, completionHandler: { granted in
+                    if !granted {
+                        self.setupResult = .notAuthorized
+                    }
+                    self.sessionQueue.resume()
+                })
+            default:
+                 setupResult = .notAuthorized
+            return
+        }
+        
+        sessionQueue.async {
+            self.configureSession()
+        }
+        DispatchQueue.main.async {
+            self.spinner = UIActivityIndicatorView(style: .large)
+            self.spinner.color = UIColor.yellow
+            self.previewView.addSubview(self.spinner)
+        }
+    }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        sessionQueue.async {
+            switch self.setupResult {
+            case .success:
+                // Only setup observers and start the session if setup succeeded.
+                self.session.startRunning()
+                
+            case .notAuthorized:
+                DispatchQueue.main.async {
+                    let changePrivacySetting = "AVCam doesn't have permission to use the camera, please change privacy settings"
+                    let message = NSLocalizedString(changePrivacySetting, comment: "Alert message when the user has denied access to the camera")
+                    let alertController = UIAlertController(title: "AVCam", message: message, preferredStyle: .alert)
+                    
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
+                                                            style: .cancel,
+                                                            handler: nil))
+                    
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"),
+                                                            style: .`default`,
+                                                            handler: { _ in
+                                                                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!,
+                                                                                          options: [:],
+                                                                                          completionHandler: nil)
+                    }))
+                    
+                    self.present(alertController, animated: true, completion: nil)
+                }
+                
+            case .configurationFailed:
+                DispatchQueue.main.async {
+                    let alertMsg = "Alert message when something goes wrong during capture session configuration"
+                    let message = NSLocalizedString("Unable to capture media", comment: alertMsg)
+                    let alertController = UIAlertController(title: "AVCam", message: message, preferredStyle: .alert)
+                    
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
+                                                            style: .cancel,
+                                                            handler: nil))
+                    
+                    self.present(alertController, animated: true, completion: nil)
+                }
+            }
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        sessionQueue.async {
+            if self.setupResult == .success {
+                self.session.stopRunning()
+            }
+        }
+        
+        super.viewWillDisappear(animated)
+    }
+    
+    // MARK: Session Management
+
     func configureSession() {
+        
+        if setupResult != .success {
+            return
+        }
+        
         session.beginConfiguration()
         
         /*
@@ -104,6 +208,27 @@ class CameraViewController: UIViewController {
             session.commitConfiguration()
             return
         }
+        
+        // Add the photo output.
+        if session.canAddOutput(photoOutput) {
+            session.addOutput(photoOutput)
+            
+            photoOutput.isHighResolutionCaptureEnabled = true
+            photoOutput.isDepthDataDeliveryEnabled = photoOutput.isDepthDataDeliverySupported
+            photoOutput.isPortraitEffectsMatteDeliveryEnabled = photoOutput.isPortraitEffectsMatteDeliverySupported
+            photoOutput.enabledSemanticSegmentationMatteTypes = photoOutput.availableSemanticSegmentationMatteTypes
+            photoOutput.maxPhotoQualityPrioritization = .quality
+            depthDataDeliveryMode = photoOutput.isDepthDataDeliverySupported ? .on : .off
+            photoQualityPrioritizationMode = .balanced
+            
+        } else {
+            print("Could not add photo output to the session")
+            setupResult = .configurationFailed
+            session.commitConfiguration()
+            return
+        }
+        
+        session.commitConfiguration()
     }
     
     func setupCaptureSession() {
@@ -113,43 +238,8 @@ class CameraViewController: UIViewController {
         }
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        previewView.session = session
-        
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-            case .authorized: // The user has previously granted access to the camera.
-                self.setupCaptureSession()
-            
-            case .notDetermined: // The user has not yet been asked for camera access.
-                AVCaptureDevice.requestAccess(for: .video) { granted in
-                    if granted {
-                        self.setupCaptureSession()
-                    }
-                }
-            
-            case .denied: // The user has previously denied access.
-                return
+    // MARK: Capturing Photos
 
-            case .restricted: // The user can't grant access due to restrictions.
-                return
-        @unknown default:
-            return
-        }
-    }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-    
     private enum DepthDataDeliveryMode {
         case on
         case off
