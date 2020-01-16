@@ -1,8 +1,5 @@
 # Nombre del proyecto
 
-<<<<<<< HEAD
-Application to be awesome
-=======
 Asistente de toma de fotos
 
 ## Tech Stack
@@ -10,7 +7,6 @@ Asistente de toma de fotos
 * [Swift](https://developer.apple.com/swift/)
 * [UIKit - Core Image](https://developer.apple.com/documentation/uikit/uiimage)
 * AVK
->>>>>>> cfb245df605f710081f0bd259f7ba6c2bdba1cbf
 
 ## Table of contents
 
@@ -31,11 +27,7 @@ Asistente de toma de fotos
 
 | Name               | Email             | Role |
 | ------------------ | ----------------- | ---- |
-<<<<<<< HEAD
-| Nombre del cliente | prueba@prueba.com | CEO  |
-=======
 | Gerardo Guadalupe Garza | C.GGARZC@ternium.com.mx | Product Owner  |
->>>>>>> cfb245df605f710081f0bd259f7ba6c2bdba1cbf
 
 
 ### Environment URLS
@@ -47,15 +39,9 @@ Asistente de toma de fotos
 
 | Name           | Email             | Role        |
 | -------------- | ----------------- | ----------- |
-<<<<<<< HEAD
-| Nombre miembro | prueba@prueba.com | Development |
-| Nombre miembro | prueba@prueba.com | Development |
-| Nombre miembro | prueba@prueba.com | Development |
-=======
 | Obed Gonzalez | A01382900@itesm.mx | Product Owner Proxy |
 | German Villacorta | germanvillapa9@gmail.com | Project Manager |
 | Luis Erick Zul | A00818663@itesm.mx | Scrum Master |
->>>>>>> cfb245df605f710081f0bd259f7ba6c2bdba1cbf
 
 ### Management tools
 
@@ -97,11 +83,7 @@ $ plis run web bash
 
 ### Running the stack for Development
 
-<<<<<<< HEAD
-1. Fire up a terminal and run: 
-=======
 1. Fire up a terminal and run:
->>>>>>> cfb245df605f710081f0bd259f7ba6c2bdba1cbf
 
 ```
 plis start
@@ -224,8 +206,4 @@ $ plis run web rubocop
 $ plis run web scss_lint
 ```
 
-<<<<<<< HEAD
 Or any other linter you have.
-=======
-Or any other linter you have.
->>>>>>> cfb245df605f710081f0bd259f7ba6c2bdba1cbf
