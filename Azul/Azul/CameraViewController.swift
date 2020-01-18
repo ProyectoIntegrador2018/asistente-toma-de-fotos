@@ -23,7 +23,6 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     
     @IBOutlet weak var lblMessage: UILabel!
     @IBOutlet weak var btnTakePhoto: UIButton!
-    @IBOutlet weak var btnCancel: UIImageView!
     @IBOutlet weak var previewView: PreviewView!
     
     private let session = AVCaptureSession()
