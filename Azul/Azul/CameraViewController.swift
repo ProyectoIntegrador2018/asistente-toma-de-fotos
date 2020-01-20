@@ -234,8 +234,13 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         do {
             try self.videoDeviceInput.device.lockForConfiguration()
             
-            self.videoDeviceInput.device.setExposureModeCustom(duration: CMTimeMake(value: 1,timescale: 30), iso: 220, completionHandler: { (time) in
-        })
+            let currentISO = self.videoDeviceInput.device.iso
+                        
+            if (currentISO + 100) < self.videoDeviceInput.device.activeFormat.maxISO {
+                self.videoDeviceInput.device.setExposureModeCustom(duration: CMTimeMake(value: 1,timescale: 30), iso: currentISO + 100, completionHandler: { (time) in
+                })
+            }
+
             self.videoDeviceInput.device.unlockForConfiguration()
         } catch {
             debugPrint(error)
@@ -246,8 +251,12 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         do {
             try self.videoDeviceInput.device.lockForConfiguration()
             
-            self.videoDeviceInput.device.setExposureModeCustom(duration: CMTimeMake(value: 1,timescale: 10), iso: 50, completionHandler: { (time) in
-        })
+            let currentISO = self.videoDeviceInput.device.iso
+            
+            if (currentISO - 100) > self.videoDeviceInput.device.activeFormat.minISO {
+                self.videoDeviceInput.device.setExposureModeCustom(duration: CMTimeMake(value: 1,timescale: 30), iso: currentISO - 100, completionHandler: { (time) in
+                })
+            }
             self.videoDeviceInput.device.unlockForConfiguration()
         } catch {
             debugPrint(error)
