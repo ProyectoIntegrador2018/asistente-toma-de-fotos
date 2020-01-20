@@ -251,7 +251,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     private var inProgressPhotoCaptureDelegates = [Int64: PhotoCaptureProcessor]()
     
     private var spinner: UIActivityIndicatorView!
-
+    
     @IBAction func capturePhoto(_ sender: UIButton) {
         let videoPreviewLayerOrientation = previewView.videoPreviewLayer.connection?.videoOrientation
         
@@ -259,12 +259,27 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             if let photoOutputConnection = self.photoOutput.connection(with: .video) {
                 photoOutputConnection.videoOrientation = videoPreviewLayerOrientation!
             }
-            var photoSettings = AVCapturePhotoSettings()
+            
+            let pixelFormat: FourCharCode = {
+                if self.photoOutput.availablePhotoPixelFormatTypes
+                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
+                    return kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+                } else if self.photoOutput.availablePhotoPixelFormatTypes
+                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
+                    return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+                } else {
+                    fatalError("No available YpCbCr formats.")
+                }
+            }()
+            
+            let photoSettings = AVCapturePhotoSettings(
+                rawPixelFormatType: 0,
+                processedFormat: [kCVPixelBufferPixelFormatTypeKey as String: pixelFormat])
             
             // Capture HEIF photos when supported. Enable auto-flash and high-resolution photos.
-            if  self.photoOutput.availablePhotoCodecTypes.contains(.hevc) {
-                photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
-            }
+//            if  self.photoOutput.availablePhotoCodecTypes.contains(.hevc) {
+//                photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
+//            }
             
             if self.videoDeviceInput.device.isFlashAvailable {
                 photoSettings.flashMode = .auto
