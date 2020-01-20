@@ -24,7 +24,6 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     @IBOutlet weak var lblMessage: UILabel!
     @IBOutlet weak var btnTakePhoto: UIButton!
     @IBOutlet weak var previewView: PreviewView!
-    
     private let session = AVCaptureSession()
     private let sessionQueue = DispatchQueue(label: "session queue")
     
@@ -44,6 +43,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     }
     
     // MARK: View Controller Life Cycle
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -228,6 +228,30 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         }
         
         session.commitConfiguration()
+    }
+    
+    @IBAction func brightnessUp(_ sender: Any) {
+        do {
+            try self.videoDeviceInput.device.lockForConfiguration()
+            
+            self.videoDeviceInput.device.setExposureModeCustom(duration: CMTimeMake(value: 1,timescale: 30), iso: 220, completionHandler: { (time) in
+        })
+            self.videoDeviceInput.device.unlockForConfiguration()
+        } catch {
+            debugPrint(error)
+        }
+    }
+    
+    @IBAction func brightnessDown(_ sender: Any) {
+        do {
+            try self.videoDeviceInput.device.lockForConfiguration()
+            
+            self.videoDeviceInput.device.setExposureModeCustom(duration: CMTimeMake(value: 1,timescale: 10), iso: 50, completionHandler: { (time) in
+        })
+            self.videoDeviceInput.device.unlockForConfiguration()
+        } catch {
+            debugPrint(error)
+        }
     }
     
     func setupCaptureSession() {
