@@ -322,7 +322,17 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                         self.spinner.stopAnimating()
                     }
                 }
-            }
+            },
+               errorHandler: { photoCaptureProcessor in
+                    DispatchQueue.main.async {
+                        self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = nil
+                        let alertController = UIAlertController(title: "Azul", message:
+                            "La fotografía no tiene el enfoque correcto.\n Intenta de nuevo.", preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: "Cerrar", style: .default))
+
+                        self.present(alertController, animated: true, completion: nil)
+                    }
+                }
             )
             
             // The photo output holds a weak reference to the photo capture delegate and stores it in an array to maintain a strong reference.

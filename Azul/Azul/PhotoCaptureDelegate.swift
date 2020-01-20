@@ -26,6 +26,8 @@ class PhotoCaptureProcessor: NSObject {
     
     private let completionHandler: (PhotoCaptureProcessor) -> Void
     
+    private let errorHandler: (PhotoCaptureProcessor) -> Void
+    
     private let photoProcessingHandler: (Bool) -> Void
     
     private var photoData: Data?
@@ -42,12 +44,18 @@ class PhotoCaptureProcessor: NSObject {
          willCapturePhotoAnimation: @escaping () -> Void,
          livePhotoCaptureHandler: @escaping (Bool) -> Void,
          completionHandler: @escaping (PhotoCaptureProcessor) -> Void,
-         photoProcessingHandler: @escaping (Bool) -> Void) {
+         photoProcessingHandler: @escaping (Bool) -> Void,
+         errorHandler: @escaping (PhotoCaptureProcessor) -> Void) {
         self.requestedPhotoSettings = requestedPhotoSettings
         self.willCapturePhotoAnimation = willCapturePhotoAnimation
         self.livePhotoCaptureHandler = livePhotoCaptureHandler
         self.completionHandler = completionHandler
         self.photoProcessingHandler = photoProcessingHandler
+        self.errorHandler = errorHandler;
+    }
+    
+    private func error() {
+        errorHandler(self)
     }
     
     private func didFinish() {
@@ -301,7 +309,7 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
         if blurryPhoto {
             print("Photo is blurry. Photo was not saved. Please try again.")
             blurryPhoto = false
-            self.didFinish()
+            self.error()
             return
         } else {
             PHPhotoLibrary.requestAuthorization { status in
