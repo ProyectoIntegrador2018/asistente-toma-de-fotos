@@ -315,7 +315,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
 //            }
             
             if self.videoDeviceInput.device.isFlashAvailable {
-                photoSettings.flashMode = .auto
+                photoSettings.flashMode = .off
             }
             
             photoSettings.isHighResolutionPhotoEnabled = true
