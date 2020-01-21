@@ -247,6 +247,54 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         }
     }
     
+    func performConfigurationOnCurrentCameraDevice(block: @escaping ((_ currentDevice:AVCaptureDevice) -> Void)) {
+        let currentDevice = self.videoDeviceInput.device
+        performConfiguration { () -> Void in
+            do {
+                try currentDevice.lockForConfiguration()
+                block(currentDevice)
+                currentDevice.unlockForConfiguration()
+            }
+            catch {}
+        }
+    }
+    
+    func performConfiguration(block: @escaping (() -> Void)) {
+        sessionQueue.async() { () -> Void in
+            block()
+        }
+    }
+    
+    
+    @IBAction func contrastUp(_ sender: Any) {
+        _ = self.videoDeviceInput.device
+        
+        
+        performConfigurationOnCurrentCameraDevice { (currentDevice) -> Void in
+            if currentDevice.isWhiteBalanceModeSupported(.locked) {
+                let maxBalanceGain = currentDevice.maxWhiteBalanceGain
+                let currentGains = currentDevice.deviceWhiteBalanceGains
+
+                let currentTemperature = currentDevice.temperatureAndTintValues(for: currentGains).temperature
+                let temperatureAndTintValues = AVCaptureDevice.WhiteBalanceTemperatureAndTintValues(temperature: currentTemperature, tint: 100)
+                
+                let chromaticity = AVCaptureDevice.WhiteBalanceGains(redGain: maxBalanceGain, greenGain: maxBalanceGain, blueGain: maxBalanceGain)
+                
+            self.videoDeviceInput.device.setExposureModeCustom(duration: CMTimeMake(value: 1,timescale: 30), iso: 50, completionHandler: { (time) in
+            })
+                
+                currentDevice.chromaticityValues(for: chromaticity)
+                
+                let deviceGains = currentDevice.deviceWhiteBalanceGains(for: temperatureAndTintValues)
+
+                currentDevice.setWhiteBalanceModeLocked(with: deviceGains) {
+                    (timestamp:CMTime) -> Void in
+                }
+            }
+        }
+    }
+    
+    
     @IBAction func brightnessDown(_ sender: Any) {
         do {
             try self.videoDeviceInput.device.lockForConfiguration()
