@@ -59,6 +59,9 @@
                                     <constraint firstAttribute="width" secondItem="hJo-YL-Pqm" secondAttribute="height" multiplier="1:1" id="sHe-u3-zw1"/>
                                 </constraints>
                                 <state key="normal" backgroundImage="circle.lefthalf.fill" catalog="system"/>
+                                <connections>
+                                    <action selector="contrastUp:" destination="khM-ja-ebN" eventType="touchUpInside" id="cjG-cU-vBP"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bEy-Pk-yLx">
                                 <rect key="frame" x="1250" y="921" width="96" height="95"/>
