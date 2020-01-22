@@ -76,8 +76,8 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     }
     
     func captureOutput(_ output: AVCaptureOutput,
-        didOutput sampleBuffer: CMSampleBuffer,
-        from connection: AVCaptureConnection) {
+                       didOutput sampleBuffer: CMSampleBuffer,
+                       from connection: AVCaptureConnection) {
         // Copy the pixel buffer to use it for our blur detection.
         guard let pixelBuffer: CVPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             fatalError("Error acquiring pixel buffer.")
@@ -108,7 +108,9 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
                                            height: height)
         lumaCopy.deallocate()
         
-        if stDev < 20 {
+        print(stDev)
+        if stDev < 40 {
+            self.blurHandler();
         }
     }
 }

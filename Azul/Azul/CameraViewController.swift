@@ -43,6 +43,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     
     private let photoOutput = AVCapturePhotoOutput()
     private let videoOutput = AVCaptureVideoDataOutput()
+    private var photoBlurDelegate: PhotoBlurDelegate! = nil
     
     var windowOrientation: UIInterfaceOrientation {
         return view.window?.windowScene?.interfaceOrientation ?? .unknown
@@ -182,24 +183,6 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                 session.addInput(videoDeviceInput)
                 self.videoDeviceInput = videoDeviceInput
                 
-                let photoBlurDelegate = PhotoBlurDelegate(blurHandler: {
-                    DispatchQueue.main.async {
-                        let alertController = UIAlertController(title: "Azul", message:
-                            "La fotografía no tiene el enfoque correcto.\n Intenta de nuevo.", preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: "Cerrar", style: .default))
-
-                        self.present(alertController, animated: true, completion: nil)
-                    }
-                });
-                
-                videoOutput.setSampleBufferDelegate(photoBlurDelegate,
-                    queue: DispatchQueue(label: "sample buffer delegate", attributes: []))
-                
-                if session.canAddOutput(videoOutput)
-                {
-                    session.addOutput(videoOutput)
-                }
-                
                 DispatchQueue.main.async {
                     /*
                      Dispatch video streaming to the main queue because AVCaptureVideoPreviewLayer is the backing layer for PreviewView.
@@ -227,6 +210,50 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             }
         } catch {
             print("Couldn't create video device input: \(error)")
+            setupResult = .configurationFailed
+            session.commitConfiguration()
+            return
+        }
+        
+        
+        
+        self.photoBlurDelegate = PhotoBlurDelegate(blurHandler: {
+            DispatchQueue.main.async {
+                let alertController = UIAlertController(title: "Azul", message:
+                    "La fotografía no tiene el enfoque correcto.\n Intenta de nuevo.", preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: "Cerrar", style: .default))
+
+                self.present(alertController, animated: true, completion: nil)
+            }
+        });
+        
+        videoOutput.setSampleBufferDelegate(photoBlurDelegate,
+                                            queue: DispatchQueue(label: "sample buffer delegate", attributes: []))
+        // Add the frame capture output
+        if session.canAddOutput(videoOutput)
+        {
+            session.addOutput(videoOutput)
+            
+            let pixelFormat: FourCharCode = {
+                if self.videoOutput.availableVideoPixelFormatTypes
+                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
+                    return kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+                } else if self.videoOutput.availableVideoPixelFormatTypes
+                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
+                    return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+                } else {
+                    fatalError("No available YpCbCr formats.")
+                }
+            }()
+            videoOutput.videoSettings["PixelFormatType"] = pixelFormat;
+            
+            
+            if let videoOutputConnection = self.videoOutput.connection(with: .video) {
+                videoOutputConnection.videoOrientation = .portrait
+                videoOutputConnection.isVideoMirrored = true
+            }
+        } else {
+            print("Could not add frame output to the session")
             setupResult = .configurationFailed
             session.commitConfiguration()
             return
@@ -337,7 +364,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     
     func setupCaptureSession() {
         sessionQueue.async {
-            self.session.sessionPreset = AVCaptureSession.Preset.photo
+            self.session.sessionPreset = .hd1280x720
             self.configureSession();
         }
     }
