@@ -9,8 +9,13 @@
 import UIKit
 import AVFoundation
 import Photos
+import Accelerate
 
-class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelegate  {
+class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
+    
+    let laplacian: [Float] = [-1, -1, -1,
+        -1,  8, -1,
+        -1, -1, -1]
     
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         // Enable the Record button to let the user stop recording.
@@ -37,6 +42,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
     
     private let photoOutput = AVCapturePhotoOutput()
+    private let videoOutput = AVCaptureVideoDataOutput()
     
     var windowOrientation: UIInterfaceOrientation {
         return view.window?.windowScene?.interfaceOrientation ?? .unknown
@@ -175,6 +181,24 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             if session.canAddInput(videoDeviceInput) {
                 session.addInput(videoDeviceInput)
                 self.videoDeviceInput = videoDeviceInput
+                
+                let photoBlurDelegate = PhotoBlurDelegate(blurHandler: {
+                    DispatchQueue.main.async {
+                        let alertController = UIAlertController(title: "Azul", message:
+                            "La fotografía no tiene el enfoque correcto.\n Intenta de nuevo.", preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: "Cerrar", style: .default))
+
+                        self.present(alertController, animated: true, completion: nil)
+                    }
+                });
+                
+                videoOutput.setSampleBufferDelegate(photoBlurDelegate,
+                    queue: DispatchQueue(label: "sample buffer delegate", attributes: []))
+                
+                if session.canAddOutput(videoOutput)
+                {
+                    session.addOutput(videoOutput)
+                }
                 
                 DispatchQueue.main.async {
                     /*
@@ -403,17 +427,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                         self.spinner.stopAnimating()
                     }
                 }
-            },
-               errorHandler: { photoCaptureProcessor in
-                    DispatchQueue.main.async {
-                        self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = nil
-                        let alertController = UIAlertController(title: "Azul", message:
-                            "La fotografía no tiene el enfoque correcto.\n Intenta de nuevo.", preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: "Cerrar", style: .default))
-
-                        self.present(alertController, animated: true, completion: nil)
-                    }
-                }
+            }
             )
             
             // The photo output holds a weak reference to the photo capture delegate and stores it in an array to maintain a strong reference.

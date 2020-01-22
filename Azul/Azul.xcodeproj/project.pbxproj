@@ -15,6 +15,7 @@
 		DBD3F8FE23CE7ECA006B18C4 /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD3F8FD23CE7ECA006B18C4 /* PreviewView.swift */; };
 		DBD3F90023CE810D006B18C4 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD3F8FF23CE810D006B18C4 /* CameraViewController.swift */; };
 		DBD3F90223CE8A2C006B18C4 /* PhotoCaptureDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD3F90123CE8A2C006B18C4 /* PhotoCaptureDelegate.swift */; };
+		DBD473EB23D7E8CE00F904B4 /* PhotoBlurDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD473EA23D7E8CE00F904B4 /* PhotoBlurDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		DBD3F8FD23CE7ECA006B18C4 /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
 		DBD3F8FF23CE810D006B18C4 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		DBD3F90123CE8A2C006B18C4 /* PhotoCaptureDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDelegate.swift; sourceTree = "<group>"; };
+		DBD473EA23D7E8CE00F904B4 /* PhotoBlurDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoBlurDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +71,7 @@
 				DBD3F8F723CE78EA006B18C4 /* Main.storyboard */,
 				DBD3F8FD23CE7ECA006B18C4 /* PreviewView.swift */,
 				DBD3F90123CE8A2C006B18C4 /* PhotoCaptureDelegate.swift */,
+				DBD473EA23D7E8CE00F904B4 /* PhotoBlurDelegate.swift */,
 			);
 			path = Azul;
 			sourceTree = "<group>";
@@ -156,6 +159,7 @@
 				DBD3F8E423CE71F6006B18C4 /* AppDelegate.swift in Sources */,
 				DBD3F90023CE810D006B18C4 /* CameraViewController.swift in Sources */,
 				DBD3F90223CE8A2C006B18C4 /* PhotoCaptureDelegate.swift in Sources */,
+				DBD473EB23D7E8CE00F904B4 /* PhotoBlurDelegate.swift in Sources */,
 				DBD3F8FE23CE7ECA006B18C4 /* PreviewView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
