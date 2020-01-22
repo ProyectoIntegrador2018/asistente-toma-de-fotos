@@ -15,6 +15,7 @@
 		DBD3F8FE23CE7ECA006B18C4 /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD3F8FD23CE7ECA006B18C4 /* PreviewView.swift */; };
 		DBD3F90023CE810D006B18C4 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD3F8FF23CE810D006B18C4 /* CameraViewController.swift */; };
 		DBD3F90223CE8A2C006B18C4 /* PhotoCaptureDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD3F90123CE8A2C006B18C4 /* PhotoCaptureDelegate.swift */; };
+		DE31529523D7E2B7003CAB48 /* EditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE31529423D7E2B7003CAB48 /* EditorViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		DBD3F8FD23CE7ECA006B18C4 /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
 		DBD3F8FF23CE810D006B18C4 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		DBD3F90123CE8A2C006B18C4 /* PhotoCaptureDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDelegate.swift; sourceTree = "<group>"; };
+		DE31529423D7E2B7003CAB48 /* EditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +69,7 @@
 				DBD3F8F123CE71F7006B18C4 /* Info.plist */,
 				DBD3F8EB23CE71F7006B18C4 /* Preview Content */,
 				DBD3F8F723CE78EA006B18C4 /* Main.storyboard */,
+				DE31529423D7E2B7003CAB48 /* EditorViewController.swift */,
 				DBD3F8FD23CE7ECA006B18C4 /* PreviewView.swift */,
 				DBD3F90123CE8A2C006B18C4 /* PhotoCaptureDelegate.swift */,
 			);
@@ -156,6 +159,7 @@
 				DBD3F8E423CE71F6006B18C4 /* AppDelegate.swift in Sources */,
 				DBD3F90023CE810D006B18C4 /* CameraViewController.swift in Sources */,
 				DBD3F90223CE8A2C006B18C4 /* PhotoCaptureDelegate.swift in Sources */,
+				DE31529523D7E2B7003CAB48 /* EditorViewController.swift in Sources */,
 				DBD3F8FE23CE7ECA006B18C4 /* PreviewView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -295,14 +299,14 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Azul/Preview Content\"";
-				DEVELOPMENT_TEAM = PLABBBAC7J;
+				DEVELOPMENT_TEAM = 29B6BZLL6D;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Azul/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = itesm.azul.luiszul;
+				PRODUCT_BUNDLE_IDENTIFIER = itesm.azul.germanvp9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;
@@ -323,7 +327,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = luiszul;
+				PRODUCT_BUNDLE_IDENTIFIER = germanvp9;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;

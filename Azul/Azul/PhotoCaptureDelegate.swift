@@ -30,6 +30,8 @@ class PhotoCaptureProcessor: NSObject {
     
     private let photoProcessingHandler: (Bool) -> Void
     
+    private let presentEditorViewController: (Data) -> Void
+    
     private var photoData: Data?
     
     private var livePhotoCompanionMovieURL: URL?
@@ -45,12 +47,14 @@ class PhotoCaptureProcessor: NSObject {
          livePhotoCaptureHandler: @escaping (Bool) -> Void,
          completionHandler: @escaping (PhotoCaptureProcessor) -> Void,
          photoProcessingHandler: @escaping (Bool) -> Void,
+         presentEditorViewController: @escaping (Data) ->Void,
          errorHandler: @escaping (PhotoCaptureProcessor) -> Void) {
         self.requestedPhotoSettings = requestedPhotoSettings
         self.willCapturePhotoAnimation = willCapturePhotoAnimation
         self.livePhotoCaptureHandler = livePhotoCaptureHandler
         self.completionHandler = completionHandler
         self.photoProcessingHandler = photoProcessingHandler
+        self.presentEditorViewController = presentEditorViewController
         self.errorHandler = errorHandler;
     }
     
@@ -96,8 +100,8 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
         }
         
         // Show a spinner if processing time exceeds one second.
-        let oneSecond = CMTime(seconds: 1, preferredTimescale: 1)
-        if maxPhotoProcessingTime > oneSecond {
+        let halfSecond = CMTime(seconds: 0.5, preferredTimescale: 1)
+        if maxPhotoProcessingTime > halfSecond {
             photoProcessingHandler(true)
         }
     }
@@ -312,6 +316,8 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
             self.error()
             return
         } else {
+            self.presentEditorViewController(photoData)
+            /* Save photo
             PHPhotoLibrary.requestAuthorization { status in
                 if status == .authorized {
                     PHPhotoLibrary.shared().performChanges({
@@ -355,6 +361,8 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
                     self.didFinish()
                 }
             }
+            
+            */
         }
     }
 }
