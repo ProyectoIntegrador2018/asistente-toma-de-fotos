@@ -219,11 +219,11 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         
         self.photoBlurDelegate = PhotoBlurDelegate(blurHandler: {
             DispatchQueue.main.async {
-                let alertController = UIAlertController(title: "Azul", message:
-                    "La fotografía no tiene el enfoque correcto.\n Intenta de nuevo.", preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: "Cerrar", style: .default))
-
-                self.present(alertController, animated: true, completion: nil)
+                self.lblMessage.text = "La foto se encuentra borrosa. Enfócala antes de continuar."
+            }
+        }, unBlurHandler:  {
+            DispatchQueue.main.async {
+                self.lblMessage.text = "La foto tiene el enfoque correcto. Ya puedes tomar la foto."
             }
         });
         

@@ -12,11 +12,14 @@ import Accelerate
 
 class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
-    init(blurHandler: @escaping () -> Void) {
+    init(blurHandler: @escaping () -> Void,
+         unBlurHandler: @escaping () -> Void) {
         self.blurHandler = blurHandler;
+        self.unBlurHandler = unBlurHandler;
     }
     
     private let blurHandler: () -> Void
+    private let unBlurHandler: () -> Void
     
     var isBlurry: Bool = false;
     let laplacian: [Float] =
@@ -72,6 +75,7 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
                        nil, 1,
                        &mean, &stdDev,
                        vDSP_Length(count))
+        
         return stdDev
     }
     
@@ -108,9 +112,10 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
                                            height: height)
         lumaCopy.deallocate()
         
-        print(stDev)
-        if stDev < 40 {
+        if stDev < 60 {
             self.blurHandler();
+        } else {
+            self.unBlurHandler();
         }
     }
 }
