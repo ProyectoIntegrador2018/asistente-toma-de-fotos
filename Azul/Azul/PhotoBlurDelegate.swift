@@ -81,8 +81,9 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         return stdDev
     }
     
-    func checkPhotoBlur() {
-        // Copy the pixel buffer to use it for our blur detection.
+    func captureOutput(_ output: AVCaptureOutput,
+                       didOutput sampleBuffer: CMSampleBuffer,
+                       from connection: AVCaptureConnection) {
         guard let pixelBuffer: CVPixelBuffer = CMSampleBufferGetImageBuffer(self.sampleBuffer) else {
             fatalError("Error acquiring pixel buffer.")
         }
@@ -106,32 +107,74 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         CVPixelBufferUnlockBaseAddress(pixelBuffer,
                                        CVPixelBufferLockFlags.readOnly)
         
-        let stDev = self.getLaplacianStDev(data: lumaCopy,
-                                           rowBytes: lumaRowBytes,
-                                           width: width,
-                                           height: height)
-        lumaCopy.deallocate()
-        
-        if stDev < 60 {
-            self.blurHandler();
-        } else {
-            self.unBlurHandler();
+        DispatchQueue.global(qos: .utility).async {
+            let stdDev = self.calculateStdDev(data: lumaCopy,
+                                              rowBytes: lumaRowBytes,
+                                              width: width,
+                                              height: height,
+                                              sequenceCount: 1,
+                                              expectedCount: 1,
+                                              orientation: UInt32(connection.videoOrientation.rawValue))
+            print(stdDev)
+            
+            lumaCopy.deallocate()
         }
     }
     
-    func captureOutput(_ output: AVCaptureOutput,
-                       didOutput sampleBuffer: CMSampleBuffer,
-                       from connection: AVCaptureConnection) {
-        // Make a copy of the buffer to avoid address errors while using the frame capture information.
-        if self.sampleBuffer != nil {
-            self.sampleBuffer = nil
-        }
-        let error = CMSampleBufferCreateCopy(allocator: kCFAllocatorDefault, sampleBuffer: sampleBuffer, sampleBufferOut: &self.sampleBuffer)
-        if error != noErr {
-            self.sampleBuffer = nil
-            return
+    func calculateStdDev(data: UnsafeMutableRawPointer,
+                  rowBytes: Int,
+                  width: Int, height: Int,
+                  sequenceCount: Int,
+                  expectedCount: Int,
+                  orientation: UInt32? ) -> Float {
+        var sourceBuffer = vImage_Buffer(data: data,
+                                         height: vImagePixelCount(height),
+                                         width: vImagePixelCount(width),
+                                         rowBytes: rowBytes)
+        
+        var floatPixels: [Float]
+        let count = width * height
+        
+        if sourceBuffer.rowBytes == width * MemoryLayout<Pixel_8>.stride {
+            let start = sourceBuffer.data.assumingMemoryBound(to: Pixel_8.self)
+            floatPixels = vDSP.integerToFloatingPoint(
+                UnsafeMutableBufferPointer(start: start,
+                                           count: count),
+                floatingPointType: Float.self)
+        } else {
+            floatPixels = [Float](unsafeUninitializedCapacity: count) {
+                buffer, initializedCount in
+                
+                var floatBuffer = vImage_Buffer(data: buffer.baseAddress,
+                                                height: sourceBuffer.height,
+                                                width: sourceBuffer.width,
+                                                rowBytes: width * MemoryLayout<Float>.size)
+                
+                vImageConvert_Planar8toPlanarF(&sourceBuffer,
+                                               &floatBuffer,
+                                               0, 255,
+                                               vImage_Flags(kvImageNoFlags))
+                
+                initializedCount = count
+            }
         }
         
-        checkPhotoBlur();
+        // Convolve with Laplacian.
+        vDSP.convolve(floatPixels,
+                      rowCount: height,
+                      columnCount: width,
+                      with3x3Kernel: laplacian,
+                      result: &floatPixels)
+        
+        // Calculate standard deviation.
+        var mean = Float.nan
+        var stdDev = Float.nan
+        
+        vDSP_normalize(floatPixels, 1,
+                       nil, 1,
+                       &mean, &stdDev,
+                       vDSP_Length(count))
+        
+        return stdDev
     }
 }

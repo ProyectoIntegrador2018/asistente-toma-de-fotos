@@ -38,6 +38,8 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
     
     private let photoOutput = AVCapturePhotoOutput()
+    private let videoOutput = AVCaptureVideoDataOutput()
+    private var photoBlurDelegate: PhotoBlurDelegate! = nil
     
     var windowOrientation: UIInterfaceOrientation {
         return view.window?.windowScene?.interfaceOrientation ?? .unknown
@@ -204,6 +206,49 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             }
         } catch {
             print("Couldn't create video device input: \(error)")
+            setupResult = .configurationFailed
+            session.commitConfiguration()
+            return
+        }
+        
+        self.photoBlurDelegate = PhotoBlurDelegate(blurHandler: {
+            DispatchQueue.main.async {
+                self.lblMessage.text = "La foto se encuentra borrosa. Enfócala antes de continuar."
+            }
+        }, unBlurHandler:  {
+            DispatchQueue.main.async {
+                self.lblMessage.text = "La foto tiene el enfoque correcto. Ya puedes tomar la foto."
+            }
+        });
+        
+        videoOutput.setSampleBufferDelegate(photoBlurDelegate,
+                                            queue: DispatchQueue(label: "sample buffer delegate", attributes: []))
+        
+        // Add the frame capture output
+        if session.canAddOutput(videoOutput)
+        {
+            session.addOutput(videoOutput)
+            
+            let pixelFormat: FourCharCode = {
+                if self.videoOutput.availableVideoPixelFormatTypes
+                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
+                    return kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+                } else if self.videoOutput.availableVideoPixelFormatTypes
+                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
+                    return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+                } else {
+                    fatalError("No available YpCbCr formats.")
+                }
+            }()
+            videoOutput.videoSettings["PixelFormatType"] = pixelFormat;
+            
+            
+            if let videoOutputConnection = self.videoOutput.connection(with: .video) {
+                videoOutputConnection.videoOrientation = .portrait
+                videoOutputConnection.isVideoMirrored = true
+            }
+        } else {
+            print("Could not add frame output to the session")
             setupResult = .configurationFailed
             session.commitConfiguration()
             return
