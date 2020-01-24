@@ -49,6 +49,9 @@
                                     <constraint firstAttribute="width" constant="96" id="ikd-jh-tIz"/>
                                 </constraints>
                                 <state key="normal" backgroundImage="bolt.horizontal.fill" catalog="system"/>
+                                <connections>
+                                    <action selector="toggleTorch:" destination="khM-ja-ebN" eventType="touchUpInside" id="318-f9-RnA"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hJo-YL-Pqm" userLabel="Btn High Contrast">
                                 <rect key="frame" x="1250" y="465" width="96" height="94.5"/>
