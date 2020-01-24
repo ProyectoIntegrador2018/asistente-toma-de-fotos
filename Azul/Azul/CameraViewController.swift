@@ -26,6 +26,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     @IBOutlet weak var previewView: PreviewView!
     private let session = AVCaptureSession()
     private let sessionQueue = DispatchQueue(label: "session queue")
+    private var photoData: Data? = nil
     
     private enum SessionSetupResult {
         case success
@@ -403,6 +404,9 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                         self.spinner.stopAnimating()
                     }
                 }
+            }, presentEditorViewController: { imageData in
+                self.photoData = imageData
+                self.performSegue(withIdentifier: "editorSegue", sender: nil)
             },
                errorHandler: { photoCaptureProcessor in
                     DispatchQueue.main.async {
@@ -419,6 +423,14 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             // The photo output holds a weak reference to the photo capture delegate and stores it in an array to maintain a strong reference.
             self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = photoCaptureProcessor
             self.photoOutput.capturePhoto(with: photoSettings, delegate: photoCaptureProcessor)
+            
+        }
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let editorViewController = segue.destination as? EditorViewController {
+            editorViewController.imageData = self.photoData
+            
         }
     }
 }
