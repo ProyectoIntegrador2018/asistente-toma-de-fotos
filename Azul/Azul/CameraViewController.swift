@@ -20,7 +20,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         }
     }
     
-    
+    @IBOutlet weak var angleType: UILabel!
     @IBOutlet weak var lblMessage: UILabel!
     @IBOutlet weak var btnTakePhoto: UIButton!
     @IBOutlet weak var previewView: PreviewView!
@@ -33,6 +33,14 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         case notAuthorized
         case configurationFailed
     }
+    
+    private var angleIndex = 0;
+    private let angles: [String] = [
+        "Pliegue",
+        "Enrollado Frente",
+        "Enrollado Lado",
+        "Libre"
+    ]
     
     private var setupResult: SessionSetupResult = .success
     @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
@@ -72,6 +80,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             self.configureSession()
         }
         DispatchQueue.main.async {
+            self.angleType.text = self.angles[self.angleIndex]
             self.spinner = UIActivityIndicatorView(style: .large)
             self.spinner.color = UIColor.yellow
             self.previewView.addSubview(self.spinner)
@@ -456,4 +465,22 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             
         }
     }
+    
+    @IBAction func cycleAngleUp(_ sender: Any) {
+        self.angleIndex -= 1
+        if self.angleIndex < 0 {
+            self.angleIndex = self.angles.count - 1
+        }
+        self.angleType.text = self.angles[self.angleIndex]
+    }
+    
+    @IBAction func cycleAngleDown(_ sender: Any) {
+        self.angleIndex += 1
+        if self.angleIndex >= self.angles.count {
+            self.angleIndex = 0
+        }
+        self.angleType.text = self.angles[self.angleIndex]
+    }
+    
+    
 }
