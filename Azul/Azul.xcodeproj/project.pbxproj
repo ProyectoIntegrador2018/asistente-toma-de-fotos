@@ -299,14 +299,14 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Azul/Preview Content\"";
-				DEVELOPMENT_TEAM = 29B6BZLL6D;
+				DEVELOPMENT_TEAM = PLABBBAC7J;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Azul/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = itesm.azul.germanvp9;
+				PRODUCT_BUNDLE_IDENTIFIER = luiszul;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;
