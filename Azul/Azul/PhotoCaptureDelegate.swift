@@ -253,9 +253,9 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
             photoData = photo.fileDataRepresentation()
         }
         
-        if photoIsBlurry(photo: photo) {
+        /*if photoIsBlurry(photo: photo) {
             self.blurryPhoto = true
-        }
+        }*/
         
         // A portrait effects matte gets generated only if AVFoundation detects a face.
         if var portraitEffectsMatte = photo.portraitEffectsMatte {
@@ -316,6 +316,7 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
             self.error()
             return
         } else {
+            didFinish()
             self.presentEditorViewController(photoData)
             /* Save photo
             PHPhotoLibrary.requestAuthorization { status in
