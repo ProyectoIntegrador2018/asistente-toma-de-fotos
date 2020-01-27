@@ -121,6 +121,11 @@ class EditorViewController: UIViewController {
         currentImage.image = snapshot(in: currentImage, rect: rect)
     }
     
+    // Restart Button - Regresa la imagen a su estado natural.
+    @IBAction func restoreImage(_ sender: Any) {
+        currentImage.image = UIImage(data: self.imageData!)
+    }
+    
     // Cancel Button - Regresa a la camara.
     @IBAction func cancel(_ sender: Any) {
         self.dismiss(animated: false, completion: nil)
