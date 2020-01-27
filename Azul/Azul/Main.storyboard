@@ -35,18 +35,10 @@
                                     <constraint firstAttribute="height" constant="96" id="fbj-iR-kCM"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zeq-i2-RRA" userLabel="Message">
-                                <rect key="frame" x="400" y="20" width="783" height="80"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="stm-2f-ckh" userLabel="Defect Type">
-                                <rect key="frame" x="662" y="952.5" width="42" height="24.5"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="stm-2f-ckh" userLabel="Defect Type">
+                                <rect key="frame" x="591" y="953" width="202" height="25"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
+                                <color key="textColor" systemColor="systemBlueColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DHj-kp-9IB" userLabel="Btn Flash">
@@ -194,7 +186,7 @@
                         <outlet property="angleType" destination="stm-2f-ckh" id="PfW-aa-4Ai"/>
                         <outlet property="btnTakePhoto" destination="bEy-Pk-yLx" id="05n-iz-rG6"/>
                         <outlet property="lblMessage" destination="Zeq-i2-RRA" id="AHm-XL-V08"/>
-                        <outlet property="previewView" destination="ZXh-C4-SVb" id="eFD-iX-YB0"/>
+                        <outlet property="previewView" destination="YRT-Sp-PXJ" id="F0i-Qa-FdC"/>
                         <outlet property="varianceLabel" destination="IjQ-bw-w8Y" id="UQL-S3-BTs"/>
                         <segue destination="DES-XN-WH5" kind="show" identifier="editorSegue" id="Sb8-hE-Ip2"/>
                     </connections>

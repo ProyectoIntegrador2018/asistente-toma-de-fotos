@@ -11,7 +11,23 @@ import UIKit
 import AVFoundation
 import Photos
 
-class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, AVCaptureVideoDataOutputSampleBufferDelegate  {
+class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, PreviewViewTouchDelegate  {
+    
+    func touch(touch: UITouch, view: UIView) {
+        let touchPoint = touch.location(in: view)
+        let focusPoint = CGPoint(x: touchPoint.y / UIScreen.main.bounds.size.height, y: 1.0 - (touchPoint.x / UIScreen.main.bounds.size.width))
+        try? self.videoDeviceInput.device.lockForConfiguration()
+        if self.videoDeviceInput.device.isFocusPointOfInterestSupported {
+            self.videoDeviceInput.device.focusPointOfInterest = focusPoint
+            self.videoDeviceInput.device.focusMode = .autoFocus
+        }
+        if self.videoDeviceInput.device.isExposurePointOfInterestSupported {
+            self.videoDeviceInput.device.exposurePointOfInterest = focusPoint
+            self.videoDeviceInput.device.exposureMode = .autoExpose
+        }
+        self.videoDeviceInput.device.unlockForConfiguration()
+    }
+    
     
     private let context = CIContext()
     
@@ -168,7 +184,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             self.blurCgImage = uiImage.cgImage
             let stdDev = self.imageLaplacianVariance(img: uiImage)
             self.varianceLabel.text = String(stdDev)
-            if stdDev <= 30 {
+            if stdDev <= 20 {
                 if self.lblMessage.text != "La imagen se encuentra borrosa. Ajústala antes de tomarla." {
                     self.lblMessage.text = "La imagen se encuentra borrosa. Ajústala antes de tomarla.";
                     self.isBlurry = true
@@ -255,6 +271,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             self.spinner = UIActivityIndicatorView(style: .large)
             self.spinner.color = UIColor.yellow
             self.previewView.addSubview(self.spinner)
+            self.previewView.addTouchDelegate(delegate: self)
         }
     }
     
@@ -411,7 +428,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             
             
             if let videoOutputConnection = self.videoOutput.connection(with: .video) {
-                videoOutputConnection.videoOrientation = .portrait
+                videoOutputConnection.videoOrientation = .landscapeLeft
                 videoOutputConnection.isVideoMirrored = true
             }
         } else {
@@ -701,6 +718,4 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         }
         self.angleType.text = self.angles[self.angleIndex]
     }
-    
-    
 }
