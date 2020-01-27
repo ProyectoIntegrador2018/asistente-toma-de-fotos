@@ -221,11 +221,17 @@
                                     <constraint firstAttribute="height" constant="50" id="O8z-lH-4S9"/>
                                 </constraints>
                                 <items>
+                                    <barButtonItem image="arrow.2.circlepath" catalog="system" width="218.5" id="ZAt-9h-FJa">
+                                        <connections>
+                                            <action selector="restoreImage:" destination="DES-XN-WH5" id="Max-xj-Ntk"/>
+                                        </connections>
+                                    </barButtonItem>
                                     <barButtonItem title="Crop" image="crop" catalog="system" width="227.5" id="Ghk-Fu-cm9">
                                         <connections>
                                             <action selector="beginCropping:" destination="DES-XN-WH5" id="3hf-Bk-7f9"/>
                                         </connections>
                                     </barButtonItem>
+                                    <barButtonItem width="706" style="plain" systemItem="fixedSpace" id="8Rd-e0-cnY"/>
                                     <barButtonItem title="Done" width="203" style="done" id="gkj-ot-9LO">
                                         <connections>
                                             <action selector="doneCropping:" destination="DES-XN-WH5" id="Sq9-Fm-bgT"/>
@@ -266,6 +272,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="arrow.2.circlepath" catalog="system" width="64" height="50"/>
         <image name="arrow.left.circle.fill" catalog="system" width="64" height="60"/>
         <image name="arrow.right.circle.fill" catalog="system" width="64" height="60"/>
         <image name="bolt.horizontal.fill" catalog="system" width="64" height="32"/>
