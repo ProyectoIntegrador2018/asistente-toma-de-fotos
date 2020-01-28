@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DB799AD423E0AFBF0054F1F9 /* PhotoBlurDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB799AD323E0AFBF0054F1F9 /* PhotoBlurDelegate.swift */; };
 		DBD3F8E423CE71F6006B18C4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD3F8E323CE71F6006B18C4 /* AppDelegate.swift */; };
 		DBD3F8EA23CE71F7006B18C4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DBD3F8E923CE71F7006B18C4 /* Assets.xcassets */; };
 		DBD3F8ED23CE71F7006B18C4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DBD3F8EC23CE71F7006B18C4 /* Preview Assets.xcassets */; };
@@ -19,6 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DB799AD323E0AFBF0054F1F9 /* PhotoBlurDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoBlurDelegate.swift; sourceTree = "<group>"; };
 		DBD3F8E023CE71F6006B18C4 /* Azul.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Azul.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBD3F8E323CE71F6006B18C4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBD3F8E923CE71F7006B18C4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -63,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				DBD3F8FF23CE810D006B18C4 /* CameraViewController.swift */,
+				DB799AD323E0AFBF0054F1F9 /* PhotoBlurDelegate.swift */,
 				DBD3F8E323CE71F6006B18C4 /* AppDelegate.swift */,
 				DBD3F8E923CE71F7006B18C4 /* Assets.xcassets */,
 				DBD3F8EE23CE71F7006B18C4 /* LaunchScreen.storyboard */,
@@ -160,6 +163,7 @@
 				DBD3F90023CE810D006B18C4 /* CameraViewController.swift in Sources */,
 				DBD3F90223CE8A2C006B18C4 /* PhotoCaptureDelegate.swift in Sources */,
 				DE31529523D7E2B7003CAB48 /* EditorViewController.swift in Sources */,
+				DB799AD423E0AFBF0054F1F9 /* PhotoBlurDelegate.swift in Sources */,
 				DBD3F8FE23CE7ECA006B18C4 /* PreviewView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
