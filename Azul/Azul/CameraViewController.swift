@@ -6,11 +6,197 @@
 //  Copyright © 2020 Azul. All rights reserved.
 //
 
+import Accelerate
 import UIKit
 import AVFoundation
 import Photos
 
-class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelegate  {
+class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, PreviewViewTouchDelegate  {
+    
+    func touch(touch: UITouch, view: UIView) {
+        let touchPoint = touch.location(in: view)
+        let focusPoint = CGPoint(x: touchPoint.y / UIScreen.main.bounds.size.height, y: 1.0 - (touchPoint.x / UIScreen.main.bounds.size.width))
+        try? self.videoDeviceInput.device.lockForConfiguration()
+        if self.videoDeviceInput.device.isFocusPointOfInterestSupported {
+            self.videoDeviceInput.device.focusPointOfInterest = focusPoint
+            self.videoDeviceInput.device.focusMode = .autoFocus
+        }
+        if self.videoDeviceInput.device.isExposurePointOfInterestSupported {
+            self.videoDeviceInput.device.exposurePointOfInterest = focusPoint
+            self.videoDeviceInput.device.exposureMode = .autoExpose
+        }
+        self.videoDeviceInput.device.unlockForConfiguration()
+    }
+    
+    
+    private let context = CIContext()
+    
+    private func imageFromSampleBuffer(sampleBuffer: CMSampleBuffer) -> UIImage? {
+        guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return nil }
+        let ciImage = CIImage(cvPixelBuffer: imageBuffer)
+        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return nil }
+        return UIImage(cgImage: cgImage)
+    }
+    
+    /*
+     The Core Graphics image representation of the source asset.
+     */
+    var blurCgImage: CGImage! = nil;
+    
+    /*
+     The format of the source asset.
+     */
+    var format: vImage_CGImageFormat! = nil;
+    
+    /*
+     The vImage buffer containing a scaled down copy of the source asset.
+     */
+    var sourceBuffer: vImage_Buffer! = nil;
+    
+    var sourceImageBuffer: vImage_Buffer! = nil;
+    
+    /*
+     The 1-channel, 8-bit vImage buffer used as the operation destination.
+     */
+    var destinationBuffer: vImage_Buffer! = nil;
+    
+    let laplacian: [Float] =
+    [-1.0, -1.0, -1.0, -1.0,  8.0, -1.0, -1.0, -1.0, -1.0];
+    
+    func imageLaplacianVariance(img: UIImage) -> Float {
+        format = vImage_CGImageFormat(cgImage: self.blurCgImage)
+        
+        if sourceImageBuffer == nil {
+            sourceImageBuffer = try? vImage_Buffer(cgImage: self.blurCgImage,
+                                                   format: format)
+        }
+        
+        defer {
+            sourceImageBuffer.free()
+            sourceImageBuffer = nil
+        }
+        
+        if sourceBuffer == nil {
+            sourceBuffer = try? vImage_Buffer(width: Int(sourceImageBuffer!.height / 3),
+                                              height: Int(sourceImageBuffer!.width / 3),
+                                              bitsPerPixel: format.bitsPerPixel)
+        }
+        
+        vImageScale_ARGB8888(&(sourceImageBuffer!),
+                             &sourceBuffer,
+                             nil,
+                             vImage_Flags(kvImageNoFlags))
+        
+        if destinationBuffer == nil {
+            destinationBuffer = try? vImage_Buffer(width: Int(sourceBuffer.width),
+                                                  height: Int(sourceBuffer.height),
+                                                  bitsPerPixel: 8)
+        }
+        
+        if destinationBuffer == nil {
+            return 100;
+        }
+        // Declare the three coefficients that model the eye's sensitivity
+        // to color.
+        let redCoefficient: Float = 0.2126
+        let greenCoefficient: Float = 0.7152
+        let blueCoefficient: Float = 0.0722
+        
+        // Create a 1D matrix containing the three luma coefficients that
+        // specify the color-to-grayscale conversion.
+        let divisor: Int32 = 0x1000
+        let fDivisor = Float(divisor)
+        
+        var coefficientsMatrix = [
+            Int16(redCoefficient * fDivisor),
+            Int16(greenCoefficient * fDivisor),
+            Int16(blueCoefficient * fDivisor)
+        ]
+        
+        // Use the matrix of coefficients to compute the scalar luminance by
+        // returning the dot product of each RGB pixel and the coefficients
+        // matrix.
+        let preBias: [Int16] = [0, 0, 0, 0]
+        let postBias: Int32 = 0
+        
+        vImageMatrixMultiply_ARGB8888ToPlanar8(&sourceBuffer,
+                                               &destinationBuffer,
+                                               &coefficientsMatrix,
+                                               divisor,
+                                               preBias,
+                                               postBias,
+                                               vImage_Flags(kvImageNoFlags))
+        
+        var floatPixels: [Float]
+        let count = Int(destinationBuffer.width) * Int(destinationBuffer.height)
+        
+        if destinationBuffer.rowBytes == Int(destinationBuffer.width) * MemoryLayout<Pixel_8>.stride {
+            let start = destinationBuffer.data.assumingMemoryBound(to: Pixel_8.self)
+            floatPixels = vDSP.integerToFloatingPoint(
+                UnsafeMutableBufferPointer(start: start,
+                                           count: count),
+                floatingPointType: Float.self)
+        } else {
+            floatPixels = [Float](unsafeUninitializedCapacity: count) {
+                buffer, initializedCount in
+                
+                var floatBuffer = vImage_Buffer(data: buffer.baseAddress,
+                                                height: destinationBuffer.height,
+                                                width: destinationBuffer.width,
+                                                rowBytes: Int(destinationBuffer.width) * MemoryLayout<Float>.size)
+                
+                vImageConvert_Planar8toPlanarF(&destinationBuffer,
+                                               &floatBuffer,
+                                               0, 255,
+                                               vImage_Flags(kvImageNoFlags))
+                
+                initializedCount = count
+            }
+        }
+        
+        // Convolve with Laplacian.
+        vDSP.convolve(floatPixels,
+                      rowCount: Int(destinationBuffer.height),
+                      columnCount: Int(destinationBuffer.width),
+                      with3x3Kernel: self.laplacian,
+                      result: &floatPixels)
+        
+        // Calculate standard deviation.
+        var mean = Float.nan
+        var stdDev = Float.nan
+        
+        vDSP_normalize(floatPixels, 1,
+                       nil, 1,
+                       &mean, &stdDev,
+                       vDSP_Length(count))
+        
+        return stdDev;
+    }
+    
+    @IBOutlet weak var varianceLabel: UILabel!
+    @IBOutlet weak var previewImageView: UIImageView!
+    private var isBlurry = false;
+    func captureOutput(_ output: AVCaptureOutput,
+                       didOutput sampleBuffer: CMSampleBuffer,
+                       from connection: AVCaptureConnection) {
+        guard let uiImage = imageFromSampleBuffer(sampleBuffer: sampleBuffer) else { return }
+        DispatchQueue.main.async { [unowned self] in
+            self.blurCgImage = uiImage.cgImage
+            let stdDev = self.imageLaplacianVariance(img: uiImage)
+            self.varianceLabel.text = String(stdDev)
+            if stdDev <= 20 {
+                if self.lblMessage.text != "La imagen se encuentra borrosa. Ajústala antes de tomarla." {
+                    self.lblMessage.text = "La imagen se encuentra borrosa. Ajústala antes de tomarla.";
+                    self.isBlurry = true
+                }
+            } else {
+                if self.lblMessage.text != "La imagen está enfocada. Ya puedes tomar la fotografía." {
+                   self.lblMessage.text = "La imagen está enfocada. Ya puedes tomar la fotografía."
+                    self.isBlurry = false
+                }
+            }
+        }
+    }
     
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         // Enable the Record button to let the user stop recording.
@@ -20,12 +206,13 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         }
     }
     
-    
+    @IBOutlet weak var angleType: UILabel!
     @IBOutlet weak var lblMessage: UILabel!
     @IBOutlet weak var btnTakePhoto: UIButton!
     @IBOutlet weak var previewView: PreviewView!
     private let session = AVCaptureSession()
     private let sessionQueue = DispatchQueue(label: "session queue")
+    private var photoData: Data? = nil
     
     private enum SessionSetupResult {
         case success
@@ -33,10 +220,19 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         case configurationFailed
     }
     
+    private var angleIndex = 0;
+    private let angles: [String] = [
+        "Pliegue",
+        "Enrollado Frente",
+        "Enrollado Lado",
+        "Libre"
+    ]
+    
     private var setupResult: SessionSetupResult = .success
     @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
     
     private let photoOutput = AVCapturePhotoOutput()
+    private let videoOutput = AVCaptureVideoDataOutput()
     
     var windowOrientation: UIInterfaceOrientation {
         return view.window?.windowScene?.interfaceOrientation ?? .unknown
@@ -71,9 +267,11 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             self.configureSession()
         }
         DispatchQueue.main.async {
+            self.angleType.text = self.angles[self.angleIndex]
             self.spinner = UIActivityIndicatorView(style: .large)
             self.spinner.color = UIColor.yellow
             self.previewView.addSubview(self.spinner)
+            self.previewView.addTouchDelegate(delegate: self)
         }
     }
     
@@ -83,6 +281,8 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         sessionQueue.async {
             switch self.setupResult {
             case .success:
+                self.videoOutput.setSampleBufferDelegate(self,
+                                                    queue: DispatchQueue(label: "sample buffer delegate", attributes: []))
                 // Only setup observers and start the session if setup succeeded.
                 self.session.startRunning()
                 
@@ -203,6 +403,36 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             }
         } catch {
             print("Couldn't create video device input: \(error)")
+            setupResult = .configurationFailed
+            session.commitConfiguration()
+            return
+        }
+        
+        // Add the frame capture output
+        if session.canAddOutput(videoOutput)
+        {
+            session.addOutput(videoOutput)
+            
+            let pixelFormat: FourCharCode = {
+                if self.videoOutput.availableVideoPixelFormatTypes
+                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
+                    return kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+                } else if self.videoOutput.availableVideoPixelFormatTypes
+                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
+                    return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+                } else {
+                    fatalError("No available YpCbCr formats.")
+                }
+            }()
+            videoOutput.videoSettings["PixelFormatType"] = pixelFormat;
+            
+            
+            if let videoOutputConnection = self.videoOutput.connection(with: .video) {
+                videoOutputConnection.videoOrientation = .landscapeLeft
+                videoOutputConnection.isVideoMirrored = true
+            }
+        } else {
+            print("Could not add frame output to the session")
             setupResult = .configurationFailed
             session.commitConfiguration()
             return
@@ -360,6 +590,10 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         let videoPreviewLayerOrientation = previewView.videoPreviewLayer.connection?.videoOrientation
         
         sessionQueue.async {
+            if self.isBlurry {
+                return;
+            }
+            
             if let photoOutputConnection = self.photoOutput.connection(with: .video) {
                 photoOutputConnection.videoOrientation = videoPreviewLayerOrientation!
             }
@@ -426,6 +660,9 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                         self.spinner.stopAnimating()
                     }
                 }
+            }, presentEditorViewController: { imageData in
+                self.photoData = imageData
+                self.performSegue(withIdentifier: "editorSegue", sender: nil)
             },
                errorHandler: { photoCaptureProcessor in
                     DispatchQueue.main.async {
@@ -442,6 +679,43 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             // The photo output holds a weak reference to the photo capture delegate and stores it in an array to maintain a strong reference.
             self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = photoCaptureProcessor
             self.photoOutput.capturePhoto(with: photoSettings, delegate: photoCaptureProcessor)
+            
         }
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        videoOutput.setSampleBufferDelegate(nil,
+                                            queue: DispatchQueue(label: "sample buffer delegate", attributes: []))
+        if sourceBuffer != nil {
+            sourceBuffer.free()
+            sourceBuffer = nil
+        }
+        if sourceImageBuffer != nil {
+            sourceImageBuffer.free()
+            sourceImageBuffer = nil
+        }
+        if destinationBuffer != nil {
+            destinationBuffer.free()
+            destinationBuffer = nil
+        }
+        if let editorViewController = segue.destination as? EditorViewController {
+            editorViewController.imageData = self.photoData
+        }
+    }
+    
+    @IBAction func cycleAngleUp(_ sender: Any) {
+        self.angleIndex -= 1
+        if self.angleIndex < 0 {
+            self.angleIndex = self.angles.count - 1
+        }
+        self.angleType.text = self.angles[self.angleIndex]
+    }
+    
+    @IBAction func cycleAngleDown(_ sender: Any) {
+        self.angleIndex += 1
+        if self.angleIndex >= self.angles.count {
+            self.angleIndex = 0
+        }
+        self.angleType.text = self.angles[self.angleIndex]
     }
 }

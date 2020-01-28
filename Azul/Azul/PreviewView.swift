@@ -9,6 +9,10 @@
 import UIKit
 import AVFoundation
 
+protocol PreviewViewTouchDelegate {
+    func touch(touch: UITouch, view: UIView);
+}
+
 class PreviewView: UIView {
     
     var videoPreviewLayer: AVCaptureVideoPreviewLayer {
@@ -29,5 +33,19 @@ class PreviewView: UIView {
     
     override class var layerClass: AnyClass {
         return AVCaptureVideoPreviewLayer.self
+    }
+    
+    var touchDelegate: PreviewViewTouchDelegate! = nil;
+    
+    func addTouchDelegate(delegate: PreviewViewTouchDelegate) {
+        touchDelegate = delegate;
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if touchDelegate != nil {
+            for touch in touches {
+                touchDelegate.touch(touch: touch, view: self);
+            }
+        }
     }
 }
