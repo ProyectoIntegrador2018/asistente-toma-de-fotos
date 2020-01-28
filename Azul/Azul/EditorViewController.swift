@@ -30,7 +30,7 @@ class EditorViewController: UIViewController {
     
     var cropRectangle: CGRect?
     var isCropping = false
-    
+        
     @IBOutlet weak var currentImage: UIImageView!
     
     @IBOutlet weak var canvas: UIImageView!
@@ -248,5 +248,32 @@ class EditorViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
+    @IBAction func contrastUp(_ sender: Any) {
+        let inputImage = CIImage(image: self.currentImage.image!)!
+        let parameters = [
+            "inputContrast": NSNumber(value: 2)
+        ]
+        let outputImage = inputImage.applyingFilter("CIColorControls", parameters: parameters)
 
+        let context = CIContext(options: nil)
+        let img = context.createCGImage(outputImage, from: outputImage.extent)!
+        
+        self.currentImage.image = UIImage(cgImage: img)
+    }
+    
+    @IBAction func contrastDown(_ sender: Any) {
+        let inputImage = CIImage(image: self.currentImage.image!)!
+        let parameters = [
+            "inputContrast": NSNumber(value: 0.5)
+        ]
+        let outputImage = inputImage.applyingFilter("CIColorControls", parameters: parameters)
+
+        let context = CIContext(options: nil)
+        let img = context.createCGImage(outputImage, from: outputImage.extent)!
+        
+        self.currentImage.image = UIImage(cgImage: img)
+    }
+    
+    
+    
 }

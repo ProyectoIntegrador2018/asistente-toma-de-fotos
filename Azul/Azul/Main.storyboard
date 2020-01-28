@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="khM-ja-ebN">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="khM-ja-ebN">
     <device id="ipad12_9rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -51,18 +51,6 @@
                                 <state key="normal" backgroundImage="bolt.horizontal.fill" catalog="system"/>
                                 <connections>
                                     <action selector="toggleTorch:" destination="khM-ja-ebN" eventType="touchUpInside" id="318-f9-RnA"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hJo-YL-Pqm" userLabel="Btn High Contrast">
-                                <rect key="frame" x="1270" y="465" width="96" height="94.5"/>
-                                <accessibility key="accessibilityConfiguration" label="Btn Right"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="96" id="Kn1-Op-6eh"/>
-                                    <constraint firstAttribute="height" constant="96" id="aGD-db-ciS"/>
-                                </constraints>
-                                <state key="normal" backgroundImage="circle.lefthalf.fill" catalog="system"/>
-                                <connections>
-                                    <action selector="contrastUp:" destination="khM-ja-ebN" eventType="touchUpInside" id="cjG-cU-vBP"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bEy-Pk-yLx">
@@ -133,15 +121,6 @@
                                 </constraints>
                                 <state key="normal" backgroundImage="xmark.circle.fill" catalog="system"/>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FOH-Yk-fIv" userLabel="Btn Low Contrast">
-                                <rect key="frame" x="1270" y="592.5" width="96" height="95"/>
-                                <accessibility key="accessibilityConfiguration" label="Btn Low Contrast"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="96" id="93X-VC-2rl"/>
-                                    <constraint firstAttribute="height" constant="96" id="Rg7-uB-04z"/>
-                                </constraints>
-                                <state key="normal" backgroundImage="circle.fill" catalog="system"/>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zeq-i2-RRA" userLabel="Message">
                                 <rect key="frame" x="643" y="38" width="80.5" height="41"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
@@ -155,13 +134,11 @@
                             <constraint firstItem="Zeq-i2-RRA" firstAttribute="top" secondItem="Rvs-98-mkw" secondAttribute="top" constant="38" id="2pU-v7-a4g"/>
                             <constraint firstAttribute="trailing" secondItem="YRT-Sp-PXJ" secondAttribute="trailing" id="3hg-xO-XFR"/>
                             <constraint firstItem="8Hr-eZ-3d8" firstAttribute="top" secondItem="Rvs-98-mkw" secondAttribute="top" id="40J-If-gKE"/>
-                            <constraint firstAttribute="trailing" secondItem="hJo-YL-Pqm" secondAttribute="trailing" id="4UM-Sf-Upx"/>
                             <constraint firstItem="YRT-Sp-PXJ" firstAttribute="top" secondItem="zJE-8K-duR" secondAttribute="top" id="CDj-Ww-ZG5"/>
                             <constraint firstAttribute="bottom" secondItem="Zly-WF-fWe" secondAttribute="bottom" id="EEj-t1-BFo"/>
                             <constraint firstAttribute="bottom" secondItem="YRT-Sp-PXJ" secondAttribute="bottom" id="IJx-M2-8Ex"/>
                             <constraint firstItem="Zeq-i2-RRA" firstAttribute="centerX" secondItem="zJE-8K-duR" secondAttribute="centerX" id="J08-P5-h8G"/>
                             <constraint firstItem="DIe-IK-2G3" firstAttribute="leading" secondItem="zJE-8K-duR" secondAttribute="leadingMargin" constant="244" id="Ng3-0E-q7R"/>
-                            <constraint firstItem="FOH-Yk-fIv" firstAttribute="top" secondItem="hJo-YL-Pqm" secondAttribute="bottom" constant="32" id="Sny-3v-BEc"/>
                             <constraint firstItem="Rvs-98-mkw" firstAttribute="bottom" secondItem="stm-2f-ckh" secondAttribute="bottom" constant="27" id="U5Q-WJ-RMj"/>
                             <constraint firstItem="bEy-Pk-yLx" firstAttribute="leading" secondItem="wKB-SS-5sE" secondAttribute="trailing" constant="183" id="X99-Wn-mvk"/>
                             <constraint firstItem="8Hr-eZ-3d8" firstAttribute="trailing" secondItem="Rvs-98-mkw" secondAttribute="trailing" id="Xcx-J8-Slk"/>
@@ -169,13 +146,11 @@
                             <constraint firstItem="YRT-Sp-PXJ" firstAttribute="leading" secondItem="zJE-8K-duR" secondAttribute="leading" id="Zik-8C-Lcn"/>
                             <constraint firstItem="stm-2f-ckh" firstAttribute="centerX" secondItem="zJE-8K-duR" secondAttribute="centerX" id="aF6-0w-yEw"/>
                             <constraint firstAttribute="bottom" secondItem="bEy-Pk-yLx" secondAttribute="bottom" id="cBO-co-3QK"/>
-                            <constraint firstAttribute="trailing" secondItem="FOH-Yk-fIv" secondAttribute="trailing" id="cJl-QX-AGB"/>
                             <constraint firstItem="2ds-sq-ojw" firstAttribute="top" secondItem="vgs-p6-mia" secondAttribute="bottom" constant="32" id="duG-u5-QqO"/>
                             <constraint firstItem="vgs-p6-mia" firstAttribute="leading" secondItem="Rvs-98-mkw" secondAttribute="leading" id="gkc-qw-V67"/>
                             <constraint firstAttribute="trailing" secondItem="bEy-Pk-yLx" secondAttribute="trailing" id="hXu-AJ-fFT"/>
                             <constraint firstAttribute="bottom" secondItem="DHj-kp-9IB" secondAttribute="bottom" id="lxd-sy-1i7"/>
                             <constraint firstItem="DIe-IK-2G3" firstAttribute="top" secondItem="zJE-8K-duR" secondAttribute="topMargin" id="rwb-ma-Epd"/>
-                            <constraint firstItem="hJo-YL-Pqm" firstAttribute="centerY" secondItem="zJE-8K-duR" secondAttribute="centerY" id="tqB-IS-QzU"/>
                             <constraint firstAttribute="bottom" secondItem="wKB-SS-5sE" secondAttribute="bottom" id="wYb-ng-PDh"/>
                             <constraint firstItem="vgs-p6-mia" firstAttribute="centerY" secondItem="zJE-8K-duR" secondAttribute="centerY" id="yzr-P5-QGV"/>
                             <constraint firstItem="DHj-kp-9IB" firstAttribute="leading" secondItem="zJE-8K-duR" secondAttribute="leading" id="zIU-Wr-5Bs"/>
@@ -249,20 +224,49 @@
                                     </barButtonItem>
                                 </items>
                             </toolbar>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FOH-Yk-fIv" userLabel="Btn Low Contrast">
+                                <rect key="frame" x="1242" y="561.5" width="96" height="95"/>
+                                <accessibility key="accessibilityConfiguration" label="Btn Low Contrast"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="96" id="93X-VC-2rl"/>
+                                    <constraint firstAttribute="height" constant="96" id="Rg7-uB-04z"/>
+                                </constraints>
+                                <state key="normal" backgroundImage="circle.fill" catalog="system"/>
+                                <connections>
+                                    <action selector="contrastDown:" destination="DES-XN-WH5" eventType="touchUpInside" id="uKm-7s-fd7"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hJo-YL-Pqm" userLabel="Btn High Contrast">
+                                <rect key="frame" x="1250" y="380" width="96" height="94.5"/>
+                                <accessibility key="accessibilityConfiguration" label="Btn Right"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="96" id="Kn1-Op-6eh"/>
+                                    <constraint firstAttribute="height" constant="96" id="aGD-db-ciS"/>
+                                </constraints>
+                                <state key="normal" backgroundImage="circle.lefthalf.fill" catalog="system"/>
+                                <connections>
+                                    <action selector="contrastUp:" destination="DES-XN-WH5" eventType="touchUpInside" id="EKa-bp-7dR"/>
+                                    <action selector="contrastUp:" destination="khM-ja-ebN" eventType="touchUpInside" id="cjG-cU-vBP"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="nrW-iP-LSD" firstAttribute="bottom" secondItem="xeA-ej-rh7" secondAttribute="bottom" constant="89" id="9Ft-DE-hPI"/>
+                            <constraint firstAttribute="trailing" secondItem="FOH-Yk-fIv" secondAttribute="trailing" constant="28" id="FEv-fb-JZ6"/>
                             <constraint firstItem="xeA-ej-rh7" firstAttribute="centerX" secondItem="nrW-iP-LSD" secondAttribute="centerX" id="NvB-BI-KzM"/>
                             <constraint firstItem="nrW-iP-LSD" firstAttribute="trailing" secondItem="XT1-aL-ray" secondAttribute="trailing" constant="28" id="OKs-Jn-nQR"/>
                             <constraint firstItem="xeA-ej-rh7" firstAttribute="top" secondItem="nrW-iP-LSD" secondAttribute="top" constant="20" id="Ogm-xl-uP3"/>
+                            <constraint firstItem="FOH-Yk-fIv" firstAttribute="top" secondItem="hJo-YL-Pqm" secondAttribute="bottom" constant="86" id="PK3-g3-MKS"/>
                             <constraint firstItem="sMv-fY-AsM" firstAttribute="width" secondItem="xeA-ej-rh7" secondAttribute="width" id="RgH-La-pHq"/>
                             <constraint firstItem="qH8-Jm-PVH" firstAttribute="centerX" secondItem="xeA-ej-rh7" secondAttribute="centerX" id="Ses-OJ-33w"/>
                             <constraint firstItem="nrW-iP-LSD" firstAttribute="bottom" secondItem="qH8-Jm-PVH" secondAttribute="bottom" constant="39" id="T5t-e5-l8R"/>
                             <constraint firstItem="qH8-Jm-PVH" firstAttribute="width" secondItem="xeA-ej-rh7" secondAttribute="width" multiplier="0.993967" id="XB2-1K-6Ht"/>
                             <constraint firstItem="sMv-fY-AsM" firstAttribute="top" secondItem="nrW-iP-LSD" secondAttribute="top" constant="20" id="b70-gf-QNu"/>
                             <constraint firstItem="sMv-fY-AsM" firstAttribute="centerX" secondItem="xeA-ej-rh7" secondAttribute="centerX" id="dQ7-i4-ydN"/>
+                            <constraint firstAttribute="trailing" secondItem="hJo-YL-Pqm" secondAttribute="trailing" constant="20" id="evl-hR-mio"/>
                             <constraint firstItem="XT1-aL-ray" firstAttribute="top" secondItem="nrW-iP-LSD" secondAttribute="top" constant="20" id="t3U-HS-6aO"/>
+                            <constraint firstItem="hJo-YL-Pqm" firstAttribute="centerY" secondItem="Go2-mF-heF" secondAttribute="centerY" constant="-85" id="tDa-Oo-byy"/>
                             <constraint firstItem="nrW-iP-LSD" firstAttribute="bottom" secondItem="sMv-fY-AsM" secondAttribute="bottom" constant="89" id="w1k-DI-5qe"/>
                             <constraint firstItem="sMv-fY-AsM" firstAttribute="height" secondItem="xeA-ej-rh7" secondAttribute="height" id="wOQ-ZV-KJt"/>
                             <constraint firstItem="qH8-Jm-PVH" firstAttribute="centerX" secondItem="sMv-fY-AsM" secondAttribute="centerX" id="xF6-Yl-r1N"/>
