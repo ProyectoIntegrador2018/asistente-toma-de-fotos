@@ -41,31 +41,31 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     /*
      The Core Graphics image representation of the source asset.
      */
-    var blurCgImage: CGImage! = nil;
+    var blurCgImage: CGImage! = nil
     
     /*
      The format of the source asset.
      */
-    var format: vImage_CGImageFormat! = nil;
+    var format: vImage_CGImageFormat! = nil
     
     /*
      The vImage buffer containing a scaled down copy of the source asset.
      */
-    var sourceBuffer: vImage_Buffer! = nil;
+    var sourceBuffer: vImage_Buffer! = nil
     
-    var sourceImageBuffer: vImage_Buffer! = nil;
+    var sourceImageBuffer: vImage_Buffer! = nil
     
     /*
      The 1-channel, 8-bit vImage buffer used as the operation destination.
      */
-    var destinationBuffer: vImage_Buffer! = nil;
+    var destinationBuffer: vImage_Buffer! = nil
+    
+    var floatPixels: [Float]! = nil;
     
     let laplacian: [Float] =
-    [-1.0, -1.0, -1.0, -1.0,  8.0, -1.0, -1.0, -1.0, -1.0];
+        [-1.0, -1.0, -1.0, -1.0,  8.0, -1.0, -1.0, -1.0, -1.0]
     
-    func imageLaplacianVariance(img: UIImage) -> Float {
-        format = vImage_CGImageFormat(cgImage: self.blurCgImage)
-        
+    func initializeSourceBuffer(img: UIImage) {
         if sourceImageBuffer == nil {
             sourceImageBuffer = try? vImage_Buffer(cgImage: self.blurCgImage,
                                                    format: format)
@@ -86,16 +86,17 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                              &sourceBuffer,
                              nil,
                              vImage_Flags(kvImageNoFlags))
-        
+    }
+    
+    func initializeDestinationBuffer(img: UIImage) {
         if destinationBuffer == nil {
             destinationBuffer = try? vImage_Buffer(width: Int(sourceBuffer.width),
                                                   height: Int(sourceBuffer.height),
                                                   bitsPerPixel: 8)
         }
-        
-        if destinationBuffer == nil {
-            return 100;
-        }
+    }
+    
+    func convertToGrayscale() {
         // Declare the three coefficients that model the eye's sensitivity
         // to color.
         let redCoefficient: Float = 0.2126
@@ -126,8 +127,9 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                                                preBias,
                                                postBias,
                                                vImage_Flags(kvImageNoFlags))
-        
-        var floatPixels: [Float]
+    }
+    
+    func createFloatBuffer() {
         let count = Int(destinationBuffer.width) * Int(destinationBuffer.height)
         
         if destinationBuffer.rowBytes == Int(destinationBuffer.width) * MemoryLayout<Pixel_8>.stride {
@@ -153,6 +155,22 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                 initializedCount = count
             }
         }
+    }
+    
+    func imageLaplacianVariance(img: UIImage) -> Float {
+        format = vImage_CGImageFormat(cgImage: self.blurCgImage)
+        
+        initializeSourceBuffer(img: img)
+        
+        initializeDestinationBuffer(img: img)
+        
+        if destinationBuffer == nil {
+            return 100;
+        }
+        
+        convertToGrayscale()
+            
+        createFloatBuffer()
         
         // Convolve with Laplacian.
         vDSP.convolve(floatPixels,
@@ -165,6 +183,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         var mean = Float.nan
         var stdDev = Float.nan
         
+        let count = Int(destinationBuffer.width) * Int(destinationBuffer.height)
         vDSP_normalize(floatPixels, 1,
                        nil, 1,
                        &mean, &stdDev,
