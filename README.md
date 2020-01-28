@@ -1,5 +1,7 @@
 # Nombre del proyecto
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/a369258dd278e6292870/maintainability)](https://codeclimate.com/github/ProyectoIntegrador2018/asistente-toma-de-fotos/maintainability)
+
 Asistente de toma de fotos
 
 ## Tech Stack
