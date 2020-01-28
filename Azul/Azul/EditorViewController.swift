@@ -37,6 +37,7 @@ class EditorViewController: UIViewController {
     @IBOutlet weak var cropButton: UIBarButtonItem!
     @IBOutlet weak var doneCroppingButton: UIBarButtonItem!
     
+    //Hola.
     override func viewDidLoad() {
         super.viewDidLoad()
         
