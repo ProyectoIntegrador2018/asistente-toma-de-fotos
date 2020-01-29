@@ -34,8 +34,8 @@ class EditorViewController: UIViewController {
     @IBOutlet weak var currentImage: UIImageView!
     
     @IBOutlet weak var canvas: UIImageView!
-    @IBOutlet weak var cropButton: UIBarButtonItem!
-    @IBOutlet weak var doneCroppingButton: UIBarButtonItem!
+    @IBOutlet weak var cropButton: UIButton!
+    @IBOutlet weak var doneCroppingButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +45,7 @@ class EditorViewController: UIViewController {
         canvas.backgroundColor = UIColor.clear
         
         doneCroppingButton.isEnabled = false
-        doneCroppingButton.tintColor = UIColor.clear
+        doneCroppingButton.isHidden = true
     }
     
 
@@ -108,7 +108,10 @@ class EditorViewController: UIViewController {
     @IBAction func beginCropping(_ sender: Any) {
         isCropping = true
         
+        cropButton.isHighlighted = true
+        
         doneCroppingButton.isEnabled = true
+        doneCroppingButton.isHidden = false
         doneCroppingButton.tintColor = cropButton.tintColor
     }
     
@@ -117,6 +120,12 @@ class EditorViewController: UIViewController {
         guard let rect = cropRectangle as CGRect? else {
             return
         }
+        
+        isCropping = false
+        cropButton.isHighlighted = false
+
+        doneCroppingButton.isEnabled = false
+        doneCroppingButton.isHidden = true
         
         currentImage.image = snapshot(in: currentImage, rect: rect)
     }

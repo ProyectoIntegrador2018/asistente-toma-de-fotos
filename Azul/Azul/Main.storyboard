@@ -169,57 +169,33 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="xeA-ej-rh7">
-                                <rect key="frame" x="20" y="20" width="1326" height="895"/>
+                                <rect key="frame" x="20" y="20" width="1326" height="984"/>
                                 <color key="backgroundColor" systemColor="opaqueSeparatorColor" red="0.77647058820000003" green="0.77647058820000003" blue="0.7843137255" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="1326" id="XkN-lY-i6v"/>
-                                    <constraint firstAttribute="height" constant="895" id="avs-zb-rp2"/>
+                                    <constraint firstAttribute="height" constant="984" id="avs-zb-rp2"/>
                                 </constraints>
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sMv-fY-AsM">
-                                <rect key="frame" x="20" y="20" width="1326" height="895"/>
+                                <rect key="frame" x="20" y="20" width="1326" height="984"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XT1-aL-ray">
-                                <rect key="frame" x="1242" y="20.5" width="96" height="95"/>
+                                <rect key="frame" x="1242" y="20.5" width="96" height="94"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="96" id="H8E-Jh-NcY"/>
-                                    <constraint firstAttribute="height" constant="96" id="rwP-yM-fWV"/>
+                                    <constraint firstAttribute="width" constant="96" id="ehV-9y-zNa"/>
+                                    <constraint firstAttribute="height" constant="95" id="esT-qZ-Wo5"/>
                                 </constraints>
                                 <state key="normal" backgroundImage="xmark.circle.fill" catalog="system"/>
                                 <connections>
                                     <action selector="cancel:" destination="DES-XN-WH5" eventType="touchUpInside" id="IUe-sa-m33"/>
                                 </connections>
                             </button>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleAspectFit" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qH8-Jm-PVH">
-                                <rect key="frame" x="24" y="915" width="1318" height="50"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="O8z-lH-4S9"/>
-                                </constraints>
-                                <items>
-                                    <barButtonItem image="arrow.2.circlepath" catalog="system" width="218.5" id="ZAt-9h-FJa">
-                                        <connections>
-                                            <action selector="restoreImage:" destination="DES-XN-WH5" id="Max-xj-Ntk"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem title="Crop" image="crop" catalog="system" width="227.5" id="Ghk-Fu-cm9">
-                                        <connections>
-                                            <action selector="beginCropping:" destination="DES-XN-WH5" id="3hf-Bk-7f9"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem width="706" style="plain" systemItem="fixedSpace" id="8Rd-e0-cnY"/>
-                                    <barButtonItem title="Done" width="203" style="done" id="gkj-ot-9LO">
-                                        <connections>
-                                            <action selector="doneCropping:" destination="DES-XN-WH5" id="Sq9-Fm-bgT"/>
-                                        </connections>
-                                    </barButtonItem>
-                                </items>
-                            </toolbar>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FOH-Yk-fIv" userLabel="Btn Low Contrast">
-                                <rect key="frame" x="1242" y="561.5" width="96" height="95"/>
+                                <rect key="frame" x="1242" y="561" width="96" height="94"/>
                                 <accessibility key="accessibilityConfiguration" label="Btn Low Contrast"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="96" id="93X-VC-2rl"/>
-                                    <constraint firstAttribute="height" constant="96" id="Rg7-uB-04z"/>
+                                    <constraint firstAttribute="height" constant="95" id="AJX-Pi-mwB"/>
+                                    <constraint firstAttribute="width" constant="96" id="Fkd-zi-rMX"/>
                                 </constraints>
                                 <state key="normal" backgroundImage="circle.fill" catalog="system"/>
                                 <connections>
@@ -227,11 +203,11 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hJo-YL-Pqm" userLabel="Btn High Contrast">
-                                <rect key="frame" x="1250" y="380" width="96" height="94.5"/>
+                                <rect key="frame" x="1250" y="380.5" width="96" height="93.5"/>
                                 <accessibility key="accessibilityConfiguration" label="Btn Right"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="96" id="Kn1-Op-6eh"/>
-                                    <constraint firstAttribute="height" constant="96" id="aGD-db-ciS"/>
+                                    <constraint firstAttribute="width" constant="96" id="TdU-bB-VGT"/>
+                                    <constraint firstAttribute="height" constant="95" id="n4O-m2-nIR"/>
                                 </constraints>
                                 <state key="normal" backgroundImage="circle.lefthalf.fill" catalog="system"/>
                                 <connections>
@@ -239,35 +215,73 @@
                                     <action selector="contrastUp:" destination="khM-ja-ebN" eventType="touchUpInside" id="cjG-cU-vBP"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hnq-bc-mb6">
+                                <rect key="frame" x="20" y="20.5" width="96" height="94"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="96" id="nhe-tM-mhJ"/>
+                                    <constraint firstAttribute="height" constant="95" id="xiK-6N-Ovr"/>
+                                </constraints>
+                                <state key="normal" backgroundImage="arrow.2.circlepath" catalog="system"/>
+                                <connections>
+                                    <action selector="restoreImage:" destination="DES-XN-WH5" eventType="touchUpInside" id="bWj-K8-oB9"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S1c-6t-I3O">
+                                <rect key="frame" x="20" y="379.5" width="96" height="95.5"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="96" id="5Ta-7p-ISR"/>
+                                    <constraint firstAttribute="height" constant="95" id="BHR-Ui-XLv"/>
+                                </constraints>
+                                <state key="normal" backgroundImage="crop" catalog="system"/>
+                                <connections>
+                                    <action selector="beginCropping:" destination="DES-XN-WH5" eventType="touchUpInside" id="00v-6x-Kh9"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9jD-K1-CGo">
+                                <rect key="frame" x="20" y="561.5" width="96" height="95"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="95" id="iK2-4U-aI9"/>
+                                    <constraint firstAttribute="width" constant="96" id="qAG-hH-scO"/>
+                                </constraints>
+                                <state key="normal" title="Recortar">
+                                    <color key="titleColor" systemColor="linkColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="doneCropping:" destination="DES-XN-WH5" eventType="touchUpInside" id="p4m-mG-bCt"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
-                            <constraint firstItem="nrW-iP-LSD" firstAttribute="bottom" secondItem="xeA-ej-rh7" secondAttribute="bottom" constant="89" id="9Ft-DE-hPI"/>
-                            <constraint firstAttribute="trailing" secondItem="FOH-Yk-fIv" secondAttribute="trailing" constant="28" id="FEv-fb-JZ6"/>
+                            <constraint firstItem="nrW-iP-LSD" firstAttribute="bottom" secondItem="xeA-ej-rh7" secondAttribute="bottom" id="9Ft-DE-hPI"/>
+                            <constraint firstItem="Hnq-bc-mb6" firstAttribute="top" secondItem="nrW-iP-LSD" secondAttribute="top" constant="20" id="ERE-L9-EzT"/>
+                            <constraint firstItem="S1c-6t-I3O" firstAttribute="leading" secondItem="nrW-iP-LSD" secondAttribute="leading" constant="20" id="JIV-we-eUw"/>
                             <constraint firstItem="xeA-ej-rh7" firstAttribute="centerX" secondItem="nrW-iP-LSD" secondAttribute="centerX" id="NvB-BI-KzM"/>
-                            <constraint firstItem="nrW-iP-LSD" firstAttribute="trailing" secondItem="XT1-aL-ray" secondAttribute="trailing" constant="28" id="OKs-Jn-nQR"/>
                             <constraint firstItem="xeA-ej-rh7" firstAttribute="top" secondItem="nrW-iP-LSD" secondAttribute="top" constant="20" id="Ogm-xl-uP3"/>
-                            <constraint firstItem="FOH-Yk-fIv" firstAttribute="top" secondItem="hJo-YL-Pqm" secondAttribute="bottom" constant="86" id="PK3-g3-MKS"/>
                             <constraint firstItem="sMv-fY-AsM" firstAttribute="width" secondItem="xeA-ej-rh7" secondAttribute="width" id="RgH-La-pHq"/>
-                            <constraint firstItem="qH8-Jm-PVH" firstAttribute="centerX" secondItem="xeA-ej-rh7" secondAttribute="centerX" id="Ses-OJ-33w"/>
-                            <constraint firstItem="nrW-iP-LSD" firstAttribute="bottom" secondItem="qH8-Jm-PVH" secondAttribute="bottom" constant="39" id="T5t-e5-l8R"/>
-                            <constraint firstItem="qH8-Jm-PVH" firstAttribute="width" secondItem="xeA-ej-rh7" secondAttribute="width" multiplier="0.993967" id="XB2-1K-6Ht"/>
+                            <constraint firstItem="nrW-iP-LSD" firstAttribute="trailing" secondItem="XT1-aL-ray" secondAttribute="trailing" constant="28" id="W7e-he-Hc4"/>
                             <constraint firstItem="sMv-fY-AsM" firstAttribute="top" secondItem="nrW-iP-LSD" secondAttribute="top" constant="20" id="b70-gf-QNu"/>
+                            <constraint firstItem="nrW-iP-LSD" firstAttribute="trailing" secondItem="hJo-YL-Pqm" secondAttribute="trailing" constant="20" id="bDV-s3-OiU"/>
+                            <constraint firstItem="nrW-iP-LSD" firstAttribute="trailing" secondItem="FOH-Yk-fIv" secondAttribute="trailing" constant="28" id="cev-tT-Wok"/>
+                            <constraint firstItem="9jD-K1-CGo" firstAttribute="leading" secondItem="nrW-iP-LSD" secondAttribute="leading" constant="20" id="d3G-1d-vpr"/>
                             <constraint firstItem="sMv-fY-AsM" firstAttribute="centerX" secondItem="xeA-ej-rh7" secondAttribute="centerX" id="dQ7-i4-ydN"/>
-                            <constraint firstAttribute="trailing" secondItem="hJo-YL-Pqm" secondAttribute="trailing" constant="20" id="evl-hR-mio"/>
-                            <constraint firstItem="XT1-aL-ray" firstAttribute="top" secondItem="nrW-iP-LSD" secondAttribute="top" constant="20" id="t3U-HS-6aO"/>
-                            <constraint firstItem="hJo-YL-Pqm" firstAttribute="centerY" secondItem="Go2-mF-heF" secondAttribute="centerY" constant="-85" id="tDa-Oo-byy"/>
-                            <constraint firstItem="nrW-iP-LSD" firstAttribute="bottom" secondItem="sMv-fY-AsM" secondAttribute="bottom" constant="89" id="w1k-DI-5qe"/>
+                            <constraint firstItem="hJo-YL-Pqm" firstAttribute="top" secondItem="S1c-6t-I3O" secondAttribute="bottom" constant="-95" id="fyw-Zn-ISt"/>
+                            <constraint firstItem="S1c-6t-I3O" firstAttribute="top" secondItem="Hnq-bc-mb6" secondAttribute="bottom" constant="264.5" id="l79-0u-Cuf"/>
+                            <constraint firstItem="XT1-aL-ray" firstAttribute="top" secondItem="nrW-iP-LSD" secondAttribute="top" constant="20" id="ndo-Ha-Y9v"/>
+                            <constraint firstItem="9jD-K1-CGo" firstAttribute="top" secondItem="S1c-6t-I3O" secondAttribute="bottom" constant="87" id="nxs-FY-c18"/>
+                            <constraint firstItem="Hnq-bc-mb6" firstAttribute="leading" secondItem="nrW-iP-LSD" secondAttribute="leading" constant="20" id="tCn-7b-Zib"/>
+                            <constraint firstItem="FOH-Yk-fIv" firstAttribute="top" secondItem="hJo-YL-Pqm" secondAttribute="bottom" constant="86" id="tfd-pa-qUQ"/>
+                            <constraint firstItem="nrW-iP-LSD" firstAttribute="bottom" secondItem="sMv-fY-AsM" secondAttribute="bottom" id="w1k-DI-5qe"/>
                             <constraint firstItem="sMv-fY-AsM" firstAttribute="height" secondItem="xeA-ej-rh7" secondAttribute="height" id="wOQ-ZV-KJt"/>
-                            <constraint firstItem="qH8-Jm-PVH" firstAttribute="centerX" secondItem="sMv-fY-AsM" secondAttribute="centerX" id="xF6-Yl-r1N"/>
+                            <constraint firstItem="hJo-YL-Pqm" firstAttribute="top" secondItem="XT1-aL-ray" secondAttribute="bottom" constant="264.5" id="znU-6D-nwd"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="nrW-iP-LSD"/>
                     </view>
                     <connections>
                         <outlet property="canvas" destination="sMv-fY-AsM" id="5Uu-in-rgI"/>
-                        <outlet property="cropButton" destination="Ghk-Fu-cm9" id="VhC-1t-jbV"/>
+                        <outlet property="cropButton" destination="S1c-6t-I3O" id="fek-q7-zYl"/>
                         <outlet property="currentImage" destination="xeA-ej-rh7" id="2Gk-p7-fov"/>
-                        <outlet property="doneCroppingButton" destination="gkj-ot-9LO" id="Udr-27-JgJ"/>
+                        <outlet property="doneCroppingButton" destination="9jD-K1-CGo" id="3Vf-LZ-cwg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xmy-fL-Zj6" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
