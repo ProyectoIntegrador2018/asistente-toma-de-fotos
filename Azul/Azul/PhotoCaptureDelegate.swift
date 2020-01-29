@@ -60,11 +60,7 @@ class PhotoCaptureProcessor: NSObject {
     private func didFinish() {
         if let livePhotoCompanionMoviePath = livePhotoCompanionMovieURL?.path {
             if FileManager.default.fileExists(atPath: livePhotoCompanionMoviePath) {
-                do {
-                    try FileManager.default.removeItem(atPath: livePhotoCompanionMoviePath)
-                } catch {
-                    print("Could not remove file at url: \(livePhotoCompanionMoviePath)")
-                }
+                try? FileManager.default.removeItem(atPath: livePhotoCompanionMoviePath)
             }
         }
         
@@ -101,6 +97,20 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
         }
     }
     
+    func getImageOption(ssmType: AVSemanticSegmentationMatte.MatteType) -> CIImageOption! {
+        // Switch on the AVSemanticSegmentationMatteType value.
+        switch ssmType {
+        case .hair:
+            return .auxiliarySemanticSegmentationHairMatte
+        case .skin:
+            return .auxiliarySemanticSegmentationSkinMatte
+        case .teeth:
+            return .auxiliarySemanticSegmentationTeethMatte
+        default:
+            return nil
+        }
+    }
+    
     func handleMatteData(_ photo: AVCapturePhoto, ssmType: AVSemanticSegmentationMatte.MatteType) {
         
         // Find the semantic segmentation matte image for the specified type.
@@ -113,17 +123,8 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
             segmentationMatte = segmentationMatte.applyingExifOrientation(exifOrientation)
         }
         
-        var imageOption: CIImageOption!
-        
-        // Switch on the AVSemanticSegmentationMatteType value.
-        switch ssmType {
-        case .hair:
-            imageOption = .auxiliarySemanticSegmentationHairMatte
-        case .skin:
-            imageOption = .auxiliarySemanticSegmentationSkinMatte
-        case .teeth:
-            imageOption = .auxiliarySemanticSegmentationTeethMatte
-        default:
+        let imageOption: CIImageOption! = getImageOption(ssmType: ssmType);
+        if imageOption == nil {
             print("This semantic segmentation type is not supported!")
             return
         }
@@ -145,6 +146,25 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
         semanticSegmentationMatteDataArray.append(imageData)
     }
     
+    func generatePortraitEffectsMate(photo: AVCapturePhoto,
+                                     matte: AVPortraitEffectsMatte) {
+        var portraitEffectsMatte = matte
+        if let orientation = photo.metadata[ String(kCGImagePropertyOrientation) ] as? UInt32 {
+            portraitEffectsMatte = portraitEffectsMatte.applyingExifOrientation(CGImagePropertyOrientation(rawValue: orientation)!)
+        }
+        let portraitEffectsMattePixelBuffer = portraitEffectsMatte.mattingImage
+        let portraitEffectsMatteImage = CIImage( cvImageBuffer: portraitEffectsMattePixelBuffer, options: [ .auxiliaryPortraitEffectsMatte: true ] )
+        
+        guard let perceptualColorSpace = CGColorSpace(name: CGColorSpace.sRGB) else {
+            portraitEffectsMatteData = nil
+            return
+        }
+        portraitEffectsMatteData = context.heifRepresentation(of: portraitEffectsMatteImage,
+                                                              format: .RGBA8,
+                                                              colorSpace: perceptualColorSpace,
+                                                              options: [.portraitEffectsMatteImage: portraitEffectsMatteImage])
+    }
+    
     /// - Tag: DidFinishProcessingPhoto
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         photoProcessingHandler(false)
@@ -156,21 +176,8 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
         }
         
         // A portrait effects matte gets generated only if AVFoundation detects a face.
-        if var portraitEffectsMatte = photo.portraitEffectsMatte {
-            if let orientation = photo.metadata[ String(kCGImagePropertyOrientation) ] as? UInt32 {
-                portraitEffectsMatte = portraitEffectsMatte.applyingExifOrientation(CGImagePropertyOrientation(rawValue: orientation)!)
-            }
-            let portraitEffectsMattePixelBuffer = portraitEffectsMatte.mattingImage
-            let portraitEffectsMatteImage = CIImage( cvImageBuffer: portraitEffectsMattePixelBuffer, options: [ .auxiliaryPortraitEffectsMatte: true ] )
-            
-            guard let perceptualColorSpace = CGColorSpace(name: CGColorSpace.sRGB) else {
-                portraitEffectsMatteData = nil
-                return
-            }
-            portraitEffectsMatteData = context.heifRepresentation(of: portraitEffectsMatteImage,
-                                                                  format: .RGBA8,
-                                                                  colorSpace: perceptualColorSpace,
-                                                                  options: [.portraitEffectsMatteImage: portraitEffectsMatteImage])
+        if let portraitEffectsMatte = photo.portraitEffectsMatte {
+            generatePortraitEffectsMate(photo: photo, matte: portraitEffectsMatte);
         } else {
             portraitEffectsMatteData = nil
         }
