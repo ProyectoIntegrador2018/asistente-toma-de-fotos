@@ -2,44 +2,121 @@
 //  PhotoBlurDelegate.swift
 //  Azul
 //
-//  Created by Luis Zul on 1/21/20.
+//  Created by Luis Zul on 1/28/20.
 //  Copyright © 2020 Azul. All rights reserved.
 //
 
-import Foundation
-import AVFoundation
 import Accelerate
+import AVFoundation
+import Foundation
+import UIKit
 
 class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+    private let context = CIContext()
     
-    private var sampleBuffer: CMSampleBuffer! = nil;
+    /*
+     The Core Graphics image representation of the source asset.
+     */
+    var blurCgImage: CGImage! = nil
     
-    init(blurHandler: @escaping () -> Void,
-         unBlurHandler: @escaping () -> Void) {
-        self.blurHandler = blurHandler;
-        self.unBlurHandler = unBlurHandler;
+    /*
+     The format of the source asset.
+     */
+    var format: vImage_CGImageFormat! = nil
+    
+    /*
+     The vImage buffer containing a scaled down copy of the source asset.
+     */
+    var sourceBuffer: vImage_Buffer! = nil
+    
+    var sourceImageBuffer: vImage_Buffer! = nil
+    
+    /*
+     The 1-channel, 8-bit vImage buffer used as the operation destination.
+     */
+    var destinationBuffer: vImage_Buffer! = nil
+    
+    var floatPixels: [Float]! = nil;
+    
+    let laplacian: [Float] =
+        [-1.0, -1.0, -1.0, -1.0,  8.0, -1.0, -1.0, -1.0, -1.0]
+    
+    private func imageFromSampleBuffer(sampleBuffer: CMSampleBuffer) -> UIImage? {
+        guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return nil }
+        let ciImage = CIImage(cvPixelBuffer: imageBuffer)
+        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return nil }
+        return UIImage(cgImage: cgImage)
     }
     
-    private let blurHandler: () -> Void
-    private let unBlurHandler: () -> Void
-    
-    var isBlurry: Bool = false;
-    let laplacian: [Float] =
-        [-1.0, -1.0, -1.0, -1.0,  8.0, -1.0, -1.0, -1.0, -1.0];
-    
-    func getLaplacianStDev(data: UnsafeMutableRawPointer,
-                           rowBytes: Int,
-                           width: Int, height: Int) -> Float {
-        var sourceBuffer = vImage_Buffer(data: data,
-                                         height: vImagePixelCount(height),
-                                         width: vImagePixelCount(width),
-                                         rowBytes: rowBytes)
+    func initializeSourceBuffer(img: UIImage) {
+        if sourceImageBuffer == nil {
+            sourceImageBuffer = try? vImage_Buffer(cgImage: self.blurCgImage,
+                                                   format: format)
+        }
         
-        var floatPixels: [Float]
-        let count = width * height
+        defer {
+            sourceImageBuffer.free()
+            sourceImageBuffer = nil
+        }
         
-        if sourceBuffer.rowBytes == width * MemoryLayout<Pixel_8>.stride {
-            let start = sourceBuffer.data.assumingMemoryBound(to: Pixel_8.self)
+        if sourceBuffer == nil {
+            sourceBuffer = try? vImage_Buffer(width: Int(sourceImageBuffer!.height / 3),
+                                              height: Int(sourceImageBuffer!.width / 3),
+                                              bitsPerPixel: format.bitsPerPixel)
+        }
+        
+        vImageScale_ARGB8888(&(sourceImageBuffer!),
+                             &sourceBuffer,
+                             nil,
+                             vImage_Flags(kvImageNoFlags))
+    }
+    
+    func initializeDestinationBuffer(img: UIImage) {
+        if destinationBuffer == nil {
+            destinationBuffer = try? vImage_Buffer(width: Int(sourceBuffer.width),
+                                                  height: Int(sourceBuffer.height),
+                                                  bitsPerPixel: 8)
+        }
+    }
+    
+    func convertToGrayscale() {
+        // Declare the three coefficients that model the eye's sensitivity
+        // to color.
+        let redCoefficient: Float = 0.2126
+        let greenCoefficient: Float = 0.7152
+        let blueCoefficient: Float = 0.0722
+        
+        // Create a 1D matrix containing the three luma coefficients that
+        // specify the color-to-grayscale conversion.
+        let divisor: Int32 = 0x1000
+        let fDivisor = Float(divisor)
+        
+        var coefficientsMatrix = [
+            Int16(redCoefficient * fDivisor),
+            Int16(greenCoefficient * fDivisor),
+            Int16(blueCoefficient * fDivisor)
+        ]
+        
+        // Use the matrix of coefficients to compute the scalar luminance by
+        // returning the dot product of each RGB pixel and the coefficients
+        // matrix.
+        let preBias: [Int16] = [0, 0, 0, 0]
+        let postBias: Int32 = 0
+        
+        vImageMatrixMultiply_ARGB8888ToPlanar8(&sourceBuffer,
+                                               &destinationBuffer,
+                                               &coefficientsMatrix,
+                                               divisor,
+                                               preBias,
+                                               postBias,
+                                               vImage_Flags(kvImageNoFlags))
+    }
+    
+    func createFloatBuffer() {
+        let count = Int(destinationBuffer.width) * Int(destinationBuffer.height)
+        
+        if destinationBuffer.rowBytes == Int(destinationBuffer.width) * MemoryLayout<Pixel_8>.stride {
+            let start = destinationBuffer.data.assumingMemoryBound(to: Pixel_8.self)
             floatPixels = vDSP.integerToFloatingPoint(
                 UnsafeMutableBufferPointer(start: start,
                                            count: count),
@@ -49,11 +126,11 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
                 buffer, initializedCount in
                 
                 var floatBuffer = vImage_Buffer(data: buffer.baseAddress,
-                                                height: sourceBuffer.height,
-                                                width: sourceBuffer.width,
-                                                rowBytes: width * MemoryLayout<Float>.size)
+                                                height: destinationBuffer.height,
+                                                width: destinationBuffer.width,
+                                                rowBytes: Int(destinationBuffer.width) * MemoryLayout<Float>.size)
                 
-                vImageConvert_Planar8toPlanarF(&sourceBuffer,
+                vImageConvert_Planar8toPlanarF(&destinationBuffer,
                                                &floatBuffer,
                                                0, 255,
                                                vImage_Flags(kvImageNoFlags))
@@ -61,11 +138,27 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
                 initializedCount = count
             }
         }
+    }
+    
+    func imageLaplacianVariance(img: UIImage) -> Float {
+        format = vImage_CGImageFormat(cgImage: self.blurCgImage)
+        
+        initializeSourceBuffer(img: img)
+        
+        initializeDestinationBuffer(img: img)
+        
+        if destinationBuffer == nil {
+            return 100;
+        }
+        
+        convertToGrayscale()
+            
+        createFloatBuffer()
         
         // Convolve with Laplacian.
         vDSP.convolve(floatPixels,
-                      rowCount: height,
-                      columnCount: width,
+                      rowCount: Int(destinationBuffer.height),
+                      columnCount: Int(destinationBuffer.width),
                       with3x3Kernel: self.laplacian,
                       result: &floatPixels)
         
@@ -73,108 +166,52 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         var mean = Float.nan
         var stdDev = Float.nan
         
+        let count = Int(destinationBuffer.width) * Int(destinationBuffer.height)
         vDSP_normalize(floatPixels, 1,
                        nil, 1,
                        &mean, &stdDev,
                        vDSP_Length(count))
         
-        return stdDev
+        return stdDev;
     }
     
+    var isBlurry = false;
     func captureOutput(_ output: AVCaptureOutput,
                        didOutput sampleBuffer: CMSampleBuffer,
                        from connection: AVCaptureConnection) {
-        guard let pixelBuffer: CVPixelBuffer = CMSampleBufferGetImageBuffer(self.sampleBuffer) else {
-            fatalError("Error acquiring pixel buffer.")
-        }
-        
-        CVPixelBufferLockBaseAddress(pixelBuffer,
-                                     CVPixelBufferLockFlags.readOnly)
-        
-        let width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 0)
-        let height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 0)
-        let count = width * height
-        
-        let lumaBaseAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 0)
-        let lumaRowBytes = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, 0)
-        
-        let lumaCopy = UnsafeMutableRawPointer.allocate(byteCount: count,
-                                                        alignment: MemoryLayout<Pixel_8>.alignment)
-        lumaCopy.copyMemory(from: lumaBaseAddress!,
-                            byteCount: count)
-        
-        
-        CVPixelBufferUnlockBaseAddress(pixelBuffer,
-                                       CVPixelBufferLockFlags.readOnly)
-        
-        DispatchQueue.global(qos: .utility).async {
-            let stdDev = self.calculateStdDev(data: lumaCopy,
-                                              rowBytes: lumaRowBytes,
-                                              width: width,
-                                              height: height,
-                                              sequenceCount: 1,
-                                              expectedCount: 1,
-                                              orientation: UInt32(connection.videoOrientation.rawValue))
-            print(stdDev)
-            
-            lumaCopy.deallocate()
+        guard let uiImage = imageFromSampleBuffer(sampleBuffer: sampleBuffer) else { return }
+        DispatchQueue.main.async { [unowned self] in
+            self.blurCgImage = uiImage.cgImage
+            let stdDev = self.imageLaplacianVariance(img: uiImage)
+            if stdDev <= 20 {
+                self.blurHandler()
+            } else {
+                self.unBlurHandler()
+            }
         }
     }
     
-    func calculateStdDev(data: UnsafeMutableRawPointer,
-                  rowBytes: Int,
-                  width: Int, height: Int,
-                  sequenceCount: Int,
-                  expectedCount: Int,
-                  orientation: UInt32? ) -> Float {
-        var sourceBuffer = vImage_Buffer(data: data,
-                                         height: vImagePixelCount(height),
-                                         width: vImagePixelCount(width),
-                                         rowBytes: rowBytes)
-        
-        var floatPixels: [Float]
-        let count = width * height
-        
-        if sourceBuffer.rowBytes == width * MemoryLayout<Pixel_8>.stride {
-            let start = sourceBuffer.data.assumingMemoryBound(to: Pixel_8.self)
-            floatPixels = vDSP.integerToFloatingPoint(
-                UnsafeMutableBufferPointer(start: start,
-                                           count: count),
-                floatingPointType: Float.self)
-        } else {
-            floatPixels = [Float](unsafeUninitializedCapacity: count) {
-                buffer, initializedCount in
-                
-                var floatBuffer = vImage_Buffer(data: buffer.baseAddress,
-                                                height: sourceBuffer.height,
-                                                width: sourceBuffer.width,
-                                                rowBytes: width * MemoryLayout<Float>.size)
-                
-                vImageConvert_Planar8toPlanarF(&sourceBuffer,
-                                               &floatBuffer,
-                                               0, 255,
-                                               vImage_Flags(kvImageNoFlags))
-                
-                initializedCount = count
-            }
+    var blurHandler: () -> ();
+    var unBlurHandler: () -> ();
+    
+    public init(blur: @escaping () -> (),
+                unBlur: @escaping () -> ()) {
+        self.blurHandler = blur;
+        self.unBlurHandler = unBlur;
+    }
+    
+    public func freeMemory() {
+        if sourceBuffer != nil {
+            sourceBuffer.free()
+            sourceBuffer = nil
         }
-        
-        // Convolve with Laplacian.
-        vDSP.convolve(floatPixels,
-                      rowCount: height,
-                      columnCount: width,
-                      with3x3Kernel: laplacian,
-                      result: &floatPixels)
-        
-        // Calculate standard deviation.
-        var mean = Float.nan
-        var stdDev = Float.nan
-        
-        vDSP_normalize(floatPixels, 1,
-                       nil, 1,
-                       &mean, &stdDev,
-                       vDSP_Length(count))
-        
-        return stdDev
+        if sourceImageBuffer != nil {
+            sourceImageBuffer.free()
+            sourceImageBuffer = nil
+        }
+        if destinationBuffer != nil {
+            destinationBuffer.free()
+            destinationBuffer = nil
+        }
     }
 }
