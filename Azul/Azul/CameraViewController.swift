@@ -22,8 +22,9 @@ class CameraViewController: UIViewController {
     
     @IBOutlet weak var angleType: UILabel!
     @IBOutlet weak var lblMessage: UILabel!
-    @IBOutlet weak var btnTakePhoto: UIButton!
     @IBOutlet weak var previewView: PreviewView!
+    @IBOutlet weak var btnTakePhoto: UIButton!
+    
     private let session = AVCaptureSession()
     private let sessionQueue = DispatchQueue(label: "session queue")
     private var photoData: Data? = nil
@@ -341,35 +342,6 @@ class CameraViewController: UIViewController {
         }
     }
     
-    
-    @IBAction func contrastUp(_ sender: Any) {
-        _ = self.videoDeviceInput.device
-        
-        
-        performConfigurationOnCurrentCameraDevice { (currentDevice) -> Void in
-            if currentDevice.isWhiteBalanceModeSupported(.locked) {
-                let maxBalanceGain = currentDevice.maxWhiteBalanceGain
-                let currentGains = currentDevice.deviceWhiteBalanceGains
-
-                let currentTemperature = currentDevice.temperatureAndTintValues(for: currentGains).temperature
-                let temperatureAndTintValues = AVCaptureDevice.WhiteBalanceTemperatureAndTintValues(temperature: currentTemperature, tint: 100)
-                
-                let chromaticity = AVCaptureDevice.WhiteBalanceGains(redGain: maxBalanceGain, greenGain: maxBalanceGain, blueGain: maxBalanceGain)
-                
-            self.videoDeviceInput.device.setExposureModeCustom(duration: CMTimeMake(value: 1,timescale: 30), iso: 50, completionHandler: { (time) in
-            })
-                
-                currentDevice.chromaticityValues(for: chromaticity)
-                
-                let deviceGains = currentDevice.deviceWhiteBalanceGains(for: temperatureAndTintValues)
-
-                currentDevice.setWhiteBalanceModeLocked(with: deviceGains) {
-                    (timestamp:CMTime) -> Void in
-                }
-            }
-        }
-    }
-    
     @IBAction func toggleTorch(_ sender: Any) {
         guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
          guard device.hasTorch else { return }
@@ -515,6 +487,7 @@ class CameraViewController: UIViewController {
         }
     }
     
+    
     @IBAction func cycleAngleUp(_ sender: Any) {
         self.angleIndex -= 1
         if self.angleIndex < 0 {
@@ -522,6 +495,7 @@ class CameraViewController: UIViewController {
         }
         self.angleType.text = self.angles[self.angleIndex]
     }
+    
     
     @IBAction func cycleAngleDown(_ sender: Any) {
         self.angleIndex += 1
