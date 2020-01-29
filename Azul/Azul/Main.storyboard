@@ -17,15 +17,6 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YRT-Sp-PXJ" customClass="PreviewView" customModule="Azul" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IjQ-bw-w8Y">
-                                        <rect key="frame" x="21" y="28" width="208" height="21"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             </view>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="info.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="DIe-IK-2G3" userLabel="Info Icon">
@@ -35,8 +26,8 @@
                                     <constraint firstAttribute="height" constant="96" id="fbj-iR-kCM"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="stm-2f-ckh" userLabel="Defect Type">
-                                <rect key="frame" x="591" y="953" width="202" height="25"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="stm-2f-ckh" userLabel="Defect Type">
+                                <rect key="frame" x="643" y="936" width="80.5" height="41"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
                                 <color key="textColor" systemColor="systemBlueColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -61,7 +52,7 @@
                                 </constraints>
                                 <state key="normal" backgroundImage="camera.circle.fill" catalog="system"/>
                                 <connections>
-                                    <action selector="capturePhoto:" destination="khM-ja-ebN" eventType="touchUpInside" id="bSO-aT-UHh"/>
+                                    <action selector="capturePhoto:" destination="khM-ja-ebN" eventType="touchUpInside" id="oRx-AL-zTl"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wKB-SS-5sE" userLabel="Btn Right">
@@ -73,7 +64,7 @@
                                 </constraints>
                                 <state key="normal" backgroundImage="arrow.right.circle.fill" catalog="system"/>
                                 <connections>
-                                    <action selector="cycleAngleDown:" destination="khM-ja-ebN" eventType="touchUpInside" id="0ch-om-H1G"/>
+                                    <action selector="cycleAngleDown:" destination="khM-ja-ebN" eventType="touchUpInside" id="Dkd-iC-CTm"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zly-WF-fWe" userLabel="Btn Left">
@@ -85,7 +76,7 @@
                                 </constraints>
                                 <state key="normal" backgroundImage="arrow.left.circle.fill" catalog="system"/>
                                 <connections>
-                                    <action selector="cycleAngleUp:" destination="khM-ja-ebN" eventType="touchUpInside" id="9Px-xS-3xc"/>
+                                    <action selector="cycleAngleUp:" destination="khM-ja-ebN" eventType="touchUpInside" id="2L3-da-z6G"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2ds-sq-ojw" userLabel="Btn Bright Minus">
@@ -97,7 +88,7 @@
                                 </constraints>
                                 <state key="normal" backgroundImage="moon.fill" catalog="system"/>
                                 <connections>
-                                    <action selector="brightnessDown:" destination="khM-ja-ebN" eventType="touchUpInside" id="qbM-8t-l6g"/>
+                                    <action selector="brightnessDown:" destination="khM-ja-ebN" eventType="touchUpInside" id="Zfc-rL-lD2"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vgs-p6-mia" userLabel="Btn Bright Plus">
@@ -109,7 +100,7 @@
                                 </constraints>
                                 <state key="normal" backgroundImage="sun.max.fill" catalog="system"/>
                                 <connections>
-                                    <action selector="brightnessUp:" destination="khM-ja-ebN" eventType="touchUpInside" id="Rdx-an-9va"/>
+                                    <action selector="brightnessUp:" destination="khM-ja-ebN" eventType="touchUpInside" id="lSf-Es-9SF"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Hr-eZ-3d8" userLabel="Btn Cancel">
@@ -158,11 +149,10 @@
                         <viewLayoutGuide key="safeArea" id="Rvs-98-mkw"/>
                     </view>
                     <connections>
-                        <outlet property="angleType" destination="stm-2f-ckh" id="PfW-aa-4Ai"/>
-                        <outlet property="btnTakePhoto" destination="bEy-Pk-yLx" id="05n-iz-rG6"/>
-                        <outlet property="lblMessage" destination="Zeq-i2-RRA" id="AHm-XL-V08"/>
-                        <outlet property="previewView" destination="YRT-Sp-PXJ" id="F0i-Qa-FdC"/>
-                        <outlet property="varianceLabel" destination="IjQ-bw-w8Y" id="UQL-S3-BTs"/>
+                        <outlet property="angleType" destination="stm-2f-ckh" id="TNN-nK-LYS"/>
+                        <outlet property="btnTakePhoto" destination="bEy-Pk-yLx" id="yWK-vq-q8d"/>
+                        <outlet property="lblMessage" destination="Zeq-i2-RRA" id="Cn2-j1-wko"/>
+                        <outlet property="previewView" destination="YRT-Sp-PXJ" id="gT0-RP-bQz"/>
                         <segue destination="DES-XN-WH5" kind="show" identifier="editorSegue" id="Sb8-hE-Ip2"/>
                     </connections>
                 </viewController>
