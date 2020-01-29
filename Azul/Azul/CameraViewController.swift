@@ -10,22 +10,7 @@ import UIKit
 import AVFoundation
 import Photos
 
-class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, PreviewViewTouchDelegate  {
-    
-    func touch(touch: UITouch, view: UIView) {
-        let touchPoint = touch.location(in: view)
-        let focusPoint = CGPoint(x: touchPoint.y / UIScreen.main.bounds.size.height, y: 1.0 - (touchPoint.x / UIScreen.main.bounds.size.width))
-        try? self.videoDeviceInput.device.lockForConfiguration()
-        if self.videoDeviceInput.device.isFocusPointOfInterestSupported {
-            self.videoDeviceInput.device.focusPointOfInterest = focusPoint
-            self.videoDeviceInput.device.focusMode = .autoFocus
-        }
-        if self.videoDeviceInput.device.isExposurePointOfInterestSupported {
-            self.videoDeviceInput.device.exposurePointOfInterest = focusPoint
-            self.videoDeviceInput.device.exposureMode = .autoExpose
-        }
-        self.videoDeviceInput.device.unlockForConfiguration()
-    }
+class CameraViewController: UIViewController {
     
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         // Enable the Record button to let the user stop recording.
@@ -69,12 +54,17 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     
     // MARK: View Controller Life Cycle
     
+    func loadUIComponents() {
+        self.angleType.text = self.angles[self.angleIndex]
+        self.spinner = UIActivityIndicatorView(style: .large)
+        self.spinner.color = UIColor.yellow
+        self.previewView.addSubview(self.spinner)
+        self.previewView.addTouchDelegate(delegate: CameraPreviewTouchDelegate(controller: self))
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         previewView.session = session
-        
         switch AVCaptureDevice.authorizationStatus(for: .video) {
             case .authorized: // The user has previously granted access to the camera.
                 break
@@ -96,15 +86,43 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             self.configureSession()
         }
         DispatchQueue.main.async {
-            self.angleType.text = self.angles[self.angleIndex]
-            self.spinner = UIActivityIndicatorView(style: .large)
-            self.spinner.color = UIColor.yellow
-            self.previewView.addSubview(self.spinner)
-            self.previewView.addTouchDelegate(delegate: self)
+            self.loadUIComponents();
         }
     }
     
     var photoBlurDelegate: PhotoBlurDelegate! = nil
+    
+    func presentNotAuthorizedAlert() {
+        let changePrivacySetting = "AVCam doesn't have permission to use the camera, please change privacy settings"
+        let message = NSLocalizedString(changePrivacySetting, comment: "Alert message when the user has denied access to the camera")
+        let alertController = UIAlertController(title: "AVCam", message: message, preferredStyle: .alert)
+        
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
+                                                style: .cancel,
+                                                handler: nil))
+        
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"),
+                                                style: .`default`,
+                                                handler: { _ in
+                                                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!,
+                                                                              options: [:],
+                                                                              completionHandler: nil)
+        }))
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func presentConfigurationWrongAlert() {
+        let alertMsg = "Alert message when something goes wrong during capture session configuration"
+        let message = NSLocalizedString("Unable to capture media", comment: alertMsg)
+        let alertController = UIAlertController(title: "AVCam", message: message, preferredStyle: .alert)
+        
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
+                                                style: .cancel,
+                                                handler: nil))
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -124,36 +142,12 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                 
             case .notAuthorized:
                 DispatchQueue.main.async {
-                    let changePrivacySetting = "AVCam doesn't have permission to use the camera, please change privacy settings"
-                    let message = NSLocalizedString(changePrivacySetting, comment: "Alert message when the user has denied access to the camera")
-                    let alertController = UIAlertController(title: "AVCam", message: message, preferredStyle: .alert)
-                    
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
-                                                            style: .cancel,
-                                                            handler: nil))
-                    
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"),
-                                                            style: .`default`,
-                                                            handler: { _ in
-                                                                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!,
-                                                                                          options: [:],
-                                                                                          completionHandler: nil)
-                    }))
-                    
-                    self.present(alertController, animated: true, completion: nil)
+                    self.presentNotAuthorizedAlert();
                 }
                 
             case .configurationFailed:
                 DispatchQueue.main.async {
-                    let alertMsg = "Alert message when something goes wrong during capture session configuration"
-                    let message = NSLocalizedString("Unable to capture media", comment: alertMsg)
-                    let alertController = UIAlertController(title: "AVCam", message: message, preferredStyle: .alert)
-                    
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
-                                                            style: .cancel,
-                                                            handler: nil))
-                    
-                    self.present(alertController, animated: true, completion: nil)
+                    self.presentConfigurationWrongAlert();
                 }
             }
         }
@@ -169,23 +163,59 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         super.viewWillDisappear(animated)
     }
     
-    // MARK: Session Management
-
-    func configureSession() {
-        
-        if setupResult != .success {
+    func addFrameCaptureInput() {
+        // Add the frame capture output
+        if session.canAddOutput(videoOutput)
+        {
+            session.addOutput(videoOutput)
+            
+            var pixelFormat: FourCharCode! = nil;
+            if self.videoOutput.availableVideoPixelFormatTypes
+                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
+                pixelFormat = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+            } else if self.videoOutput.availableVideoPixelFormatTypes
+                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
+                pixelFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+            } else {
+                fatalError("No available YpCbCr formats.")
+            }
+            videoOutput.videoSettings["PixelFormatType"] = pixelFormat;
+            
+            
+            if let videoOutputConnection = self.videoOutput.connection(with: .video) {
+                videoOutputConnection.videoOrientation = .landscapeLeft
+                videoOutputConnection.isVideoMirrored = true
+            }
+        } else {
+            print("Could not add frame output to the session")
+            setupResult = .configurationFailed
+            session.commitConfiguration()
             return
         }
-        
-        session.beginConfiguration()
-        
-        /*
-         Do not create an AVCaptureMovieFileOutput when setting up the session because
-         Live Photo is not supported when AVCaptureMovieFileOutput is added to the session.
-         */
-        session.sessionPreset = .photo
-        
-        // Add video input.
+    }
+    
+    func addPhotoInput() {
+        // Add the photo output.
+        if session.canAddOutput(photoOutput) {
+            session.addOutput(photoOutput)
+            
+            photoOutput.isHighResolutionCaptureEnabled = true
+            photoOutput.isDepthDataDeliveryEnabled = photoOutput.isDepthDataDeliverySupported
+            photoOutput.isPortraitEffectsMatteDeliveryEnabled = photoOutput.isPortraitEffectsMatteDeliverySupported
+            photoOutput.enabledSemanticSegmentationMatteTypes = photoOutput.availableSemanticSegmentationMatteTypes
+            photoOutput.maxPhotoQualityPrioritization = .quality
+            depthDataDeliveryMode = photoOutput.isDepthDataDeliverySupported ? .on : .off
+            photoQualityPrioritizationMode = .balanced
+            
+        } else {
+            print("Could not add photo output to the session")
+            setupResult = .configurationFailed
+            session.commitConfiguration()
+            return
+        }
+    }
+    
+    func setVideoDeviceFromDefaultDevice() {
         do {
             var defaultVideoDevice: AVCaptureDevice?
             
@@ -208,90 +238,70 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             }
             let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
             
-            if session.canAddInput(videoDeviceInput) {
-                session.addInput(videoDeviceInput)
-                self.videoDeviceInput = videoDeviceInput
-                
-                DispatchQueue.main.async {
-                    /*
-                     Dispatch video streaming to the main queue because AVCaptureVideoPreviewLayer is the backing layer for PreviewView.
-                     You can manipulate UIView only on the main thread.
-                     Note: As an exception to the above rule, it's not necessary to serialize video orientation changes
-                     on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
-                     
-                     Use the window scene's orientation as the initial video orientation. Subsequent orientation changes are
-                     handled by CameraViewController.viewWillTransition(to:with:).
-                     */
-                    var initialVideoOrientation: AVCaptureVideoOrientation = .portrait
-                    if self.windowOrientation != .unknown {
-                        if let videoOrientation = AVCaptureVideoOrientation(rawValue: self.windowOrientation.rawValue) {
-                            initialVideoOrientation = videoOrientation
-                        }
-                    }
-                    
-                    self.previewView.videoPreviewLayer.connection?.videoOrientation = initialVideoOrientation
-                }
-            } else {
-                print("Couldn't add video device input to the session.")
-                setupResult = .configurationFailed
-                session.commitConfiguration()
-                return
-            }
+            self.videoDeviceInput = videoDeviceInput
         } catch {
             print("Couldn't create video device input: \(error)")
             setupResult = .configurationFailed
             session.commitConfiguration()
             return
         }
+    }
+    
+    func addVideoInput() {
+        self.setVideoDeviceFromDefaultDevice();
         
-        // Add the frame capture output
-        if session.canAddOutput(videoOutput)
-        {
-            session.addOutput(videoOutput)
+        if session.canAddInput(videoDeviceInput) {
+            session.addInput(videoDeviceInput)
             
-            let pixelFormat: FourCharCode = {
-                if self.videoOutput.availableVideoPixelFormatTypes
-                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
-                    return kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
-                } else if self.videoOutput.availableVideoPixelFormatTypes
-                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
-                    return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
-                } else {
-                    fatalError("No available YpCbCr formats.")
+            DispatchQueue.main.async {
+                /*
+                 Dispatch video streaming to the main queue because AVCaptureVideoPreviewLayer is the backing layer for PreviewView.
+                 You can manipulate UIView only on the main thread.
+                 Note: As an exception to the above rule, it's not necessary to serialize video orientation changes
+                 on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
+                 
+                 Use the window scene's orientation as the initial video orientation. Subsequent orientation changes are
+                 handled by CameraViewController.viewWillTransition(to:with:).
+                 */
+                var initialVideoOrientation: AVCaptureVideoOrientation = .portrait
+                if self.windowOrientation != .unknown {
+                    if let videoOrientation = AVCaptureVideoOrientation(rawValue: self.windowOrientation.rawValue) {
+                        initialVideoOrientation = videoOrientation
+                    }
                 }
-            }()
-            videoOutput.videoSettings["PixelFormatType"] = pixelFormat;
-            
-            
-            if let videoOutputConnection = self.videoOutput.connection(with: .video) {
-                videoOutputConnection.videoOrientation = .landscapeLeft
-                videoOutputConnection.isVideoMirrored = true
+                
+                self.previewView.videoPreviewLayer.connection?.videoOrientation = initialVideoOrientation
             }
         } else {
-            print("Could not add frame output to the session")
+            print("Couldn't add video device input to the session.")
             setupResult = .configurationFailed
             session.commitConfiguration()
+            return
+        }
+    }
+    
+    // MARK: Session Management
+
+    func configureSession() {
+        
+        if setupResult != .success {
             return
         }
         
-        // Add the photo output.
-        if session.canAddOutput(photoOutput) {
-            session.addOutput(photoOutput)
-            
-            photoOutput.isHighResolutionCaptureEnabled = true
-            photoOutput.isDepthDataDeliveryEnabled = photoOutput.isDepthDataDeliverySupported
-            photoOutput.isPortraitEffectsMatteDeliveryEnabled = photoOutput.isPortraitEffectsMatteDeliverySupported
-            photoOutput.enabledSemanticSegmentationMatteTypes = photoOutput.availableSemanticSegmentationMatteTypes
-            photoOutput.maxPhotoQualityPrioritization = .quality
-            depthDataDeliveryMode = photoOutput.isDepthDataDeliverySupported ? .on : .off
-            photoQualityPrioritizationMode = .balanced
-            
-        } else {
-            print("Could not add photo output to the session")
-            setupResult = .configurationFailed
-            session.commitConfiguration()
-            return
-        }
+        session.beginConfiguration()
+        
+        /*
+         Do not create an AVCaptureMovieFileOutput when setting up the session because
+         Live Photo is not supported when AVCaptureMovieFileOutput is added to the session.
+         */
+        session.sessionPreset = .photo
+        
+        // Add video input.
+        self.addVideoInput();
+        
+        self.addFrameCaptureInput();
+        
+        self.addPhotoInput();
         
         session.commitConfiguration()
     }
@@ -364,23 +374,15 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
          guard device.hasTorch else { return }
 
-         do {
-             try device.lockForConfiguration()
+         try? device.lockForConfiguration()
 
-             if (device.torchMode == AVCaptureDevice.TorchMode.on) {
-                 device.torchMode = AVCaptureDevice.TorchMode.off
-             } else {
-                 do {
-                     try device.setTorchModeOn(level: 1.0)
-                 } catch {
-                     print(error)
-                 }
-             }
-
-             device.unlockForConfiguration()
-         } catch {
-             print(error)
+         if (device.torchMode == AVCaptureDevice.TorchMode.on) {
+             device.torchMode = AVCaptureDevice.TorchMode.off
+         } else {
+            try? device.setTorchModeOn(level: 1.0)
          }
+
+         device.unlockForConfiguration()
         
     }
     
@@ -422,6 +424,31 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     
     private var spinner: UIActivityIndicatorView!
     
+    func createPhotoSettings() -> AVCapturePhotoSettings {
+        var photoSettings = AVCapturePhotoSettings()
+        
+        // Capture HEIF photos when supported. Enable auto-flash and high-resolution photos.
+        if  self.photoOutput.availablePhotoCodecTypes.contains(.hevc) {
+            photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
+        }
+        
+        if self.videoDeviceInput.device.isFlashAvailable {
+            photoSettings.flashMode = .auto
+        }
+        
+        photoSettings.isHighResolutionPhotoEnabled = true
+        if !photoSettings.__availablePreviewPhotoPixelFormatTypes.isEmpty {
+            photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: photoSettings.__availablePreviewPhotoPixelFormatTypes.first!]
+        }
+        
+        photoSettings.isDepthDataDeliveryEnabled = (self.depthDataDeliveryMode == .on
+        && self.photoOutput.isDepthDataDeliveryEnabled)
+        
+        photoSettings.photoQualityPrioritization = self.photoQualityPrioritizationMode
+        
+        return photoSettings
+    }
+    
     @IBAction func capturePhoto(_ sender: UIButton) {
         let videoPreviewLayerOrientation = previewView.videoPreviewLayer.connection?.videoOrientation
         
@@ -433,41 +460,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             if let photoOutputConnection = self.photoOutput.connection(with: .video) {
                 photoOutputConnection.videoOrientation = videoPreviewLayerOrientation!
             }
-            
-            let pixelFormat: FourCharCode = {
-                if self.photoOutput.availablePhotoPixelFormatTypes
-                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
-                    return kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
-                } else if self.photoOutput.availablePhotoPixelFormatTypes
-                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
-                    return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
-                } else {
-                    fatalError("No available YpCbCr formats.")
-                }
-            }()
-            
-            let photoSettings = AVCapturePhotoSettings(
-                rawPixelFormatType: 0,
-                processedFormat: [kCVPixelBufferPixelFormatTypeKey as String: pixelFormat])
-            
-            // Capture HEIF photos when supported. Enable auto-flash and high-resolution photos.
-//            if  self.photoOutput.availablePhotoCodecTypes.contains(.hevc) {
-//                photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
-//            }
-            
-            if self.videoDeviceInput.device.isFlashAvailable {
-                photoSettings.flashMode = .auto
-            }
-            
-            photoSettings.isHighResolutionPhotoEnabled = true
-            if !photoSettings.__availablePreviewPhotoPixelFormatTypes.isEmpty {
-                photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: photoSettings.__availablePreviewPhotoPixelFormatTypes.first!]
-            }
-            
-            photoSettings.isDepthDataDeliveryEnabled = (self.depthDataDeliveryMode == .on
-            && self.photoOutput.isDepthDataDeliveryEnabled)
-            
-            photoSettings.photoQualityPrioritization = self.photoQualityPrioritizationMode
+            let photoSettings = self.createPhotoSettings();
             
             let photoCaptureProcessor = PhotoCaptureProcessor(with: photoSettings, willCapturePhotoAnimation: {
                 // Flash the screen to signal that AVCam took a photo.
@@ -502,12 +495,6 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             },
                errorHandler: { photoCaptureProcessor in
                     DispatchQueue.main.async {
-                        self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = nil
-                        let alertController = UIAlertController(title: "Azul", message:
-                            "La fotografía no tiene el enfoque correcto.\n Intenta de nuevo.", preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: "Cerrar", style: .default))
-
-                        self.present(alertController, animated: true, completion: nil)
                     }
                 }
             )
