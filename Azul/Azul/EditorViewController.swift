@@ -251,7 +251,7 @@ class EditorViewController: UIViewController {
     @IBAction func contrastUp(_ sender: Any) {
         let inputImage = CIImage(image: self.currentImage.image!)!
         let parameters = [
-            "inputContrast": NSNumber(value: 2)
+            "inputContrast": NSNumber(value: 1.1)
         ]
         let outputImage = inputImage.applyingFilter("CIColorControls", parameters: parameters)
 
@@ -262,9 +262,10 @@ class EditorViewController: UIViewController {
     }
     
     @IBAction func contrastDown(_ sender: Any) {
+        
         let inputImage = CIImage(image: self.currentImage.image!)!
         let parameters = [
-            "inputContrast": NSNumber(value: 0.5)
+            "inputContrast": NSNumber(value: 0.9)
         ]
         let outputImage = inputImage.applyingFilter("CIColorControls", parameters: parameters)
 
