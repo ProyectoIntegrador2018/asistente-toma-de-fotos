@@ -215,7 +215,7 @@ class CameraViewController: UIViewController {
         }
     }
     
-    func addVideoInput() {
+    func setVideoDeviceFromDefaultDevice() {
         do {
             var defaultVideoDevice: AVCaptureDevice?
             
@@ -245,6 +245,10 @@ class CameraViewController: UIViewController {
             session.commitConfiguration()
             return
         }
+    }
+    
+    func addVideoInput() {
+        self.setVideoDeviceFromDefaultDevice();
         
         if session.canAddInput(videoDeviceInput) {
             session.addInput(videoDeviceInput)
@@ -293,11 +297,11 @@ class CameraViewController: UIViewController {
         session.sessionPreset = .photo
         
         // Add video input.
-        addVideoInput();
+        self.addVideoInput();
         
-        addFrameCaptureInput();
+        self.addFrameCaptureInput();
         
-        addPhotoInput();
+        self.addPhotoInput();
         
         session.commitConfiguration()
     }
