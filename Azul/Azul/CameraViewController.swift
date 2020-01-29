@@ -10,22 +10,7 @@ import UIKit
 import AVFoundation
 import Photos
 
-class CameraViewController: UIViewController, PreviewViewTouchDelegate  {
-    
-    func touch(touch: UITouch, view: UIView) {
-        let touchPoint = touch.location(in: view)
-        let focusPoint = CGPoint(x: touchPoint.y / UIScreen.main.bounds.size.height, y: 1.0 - (touchPoint.x / UIScreen.main.bounds.size.width))
-        try? self.videoDeviceInput.device.lockForConfiguration()
-        if self.videoDeviceInput.device.isFocusPointOfInterestSupported {
-            self.videoDeviceInput.device.focusPointOfInterest = focusPoint
-            self.videoDeviceInput.device.focusMode = .autoFocus
-        }
-        if self.videoDeviceInput.device.isExposurePointOfInterestSupported {
-            self.videoDeviceInput.device.exposurePointOfInterest = focusPoint
-            self.videoDeviceInput.device.exposureMode = .autoExpose
-        }
-        self.videoDeviceInput.device.unlockForConfiguration()
-    }
+class CameraViewController: UIViewController {
     
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         // Enable the Record button to let the user stop recording.
@@ -74,7 +59,7 @@ class CameraViewController: UIViewController, PreviewViewTouchDelegate  {
         self.spinner = UIActivityIndicatorView(style: .large)
         self.spinner.color = UIColor.yellow
         self.previewView.addSubview(self.spinner)
-        self.previewView.addTouchDelegate(delegate: self)
+        self.previewView.addTouchDelegate(delegate: CameraPreviewTouchDelegate(controller: self))
     }
     
     override func viewDidLoad() {
@@ -253,37 +238,38 @@ class CameraViewController: UIViewController, PreviewViewTouchDelegate  {
             }
             let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
             
-            if session.canAddInput(videoDeviceInput) {
-                session.addInput(videoDeviceInput)
-                self.videoDeviceInput = videoDeviceInput
-                
-                DispatchQueue.main.async {
-                    /*
-                     Dispatch video streaming to the main queue because AVCaptureVideoPreviewLayer is the backing layer for PreviewView.
-                     You can manipulate UIView only on the main thread.
-                     Note: As an exception to the above rule, it's not necessary to serialize video orientation changes
-                     on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
-                     
-                     Use the window scene's orientation as the initial video orientation. Subsequent orientation changes are
-                     handled by CameraViewController.viewWillTransition(to:with:).
-                     */
-                    var initialVideoOrientation: AVCaptureVideoOrientation = .portrait
-                    if self.windowOrientation != .unknown {
-                        if let videoOrientation = AVCaptureVideoOrientation(rawValue: self.windowOrientation.rawValue) {
-                            initialVideoOrientation = videoOrientation
-                        }
-                    }
-                    
-                    self.previewView.videoPreviewLayer.connection?.videoOrientation = initialVideoOrientation
-                }
-            } else {
-                print("Couldn't add video device input to the session.")
-                setupResult = .configurationFailed
-                session.commitConfiguration()
-                return
-            }
+            self.videoDeviceInput = videoDeviceInput
         } catch {
             print("Couldn't create video device input: \(error)")
+            setupResult = .configurationFailed
+            session.commitConfiguration()
+            return
+        }
+        
+        if session.canAddInput(videoDeviceInput) {
+            session.addInput(videoDeviceInput)
+            
+            DispatchQueue.main.async {
+                /*
+                 Dispatch video streaming to the main queue because AVCaptureVideoPreviewLayer is the backing layer for PreviewView.
+                 You can manipulate UIView only on the main thread.
+                 Note: As an exception to the above rule, it's not necessary to serialize video orientation changes
+                 on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
+                 
+                 Use the window scene's orientation as the initial video orientation. Subsequent orientation changes are
+                 handled by CameraViewController.viewWillTransition(to:with:).
+                 */
+                var initialVideoOrientation: AVCaptureVideoOrientation = .portrait
+                if self.windowOrientation != .unknown {
+                    if let videoOrientation = AVCaptureVideoOrientation(rawValue: self.windowOrientation.rawValue) {
+                        initialVideoOrientation = videoOrientation
+                    }
+                }
+                
+                self.previewView.videoPreviewLayer.connection?.videoOrientation = initialVideoOrientation
+            }
+        } else {
+            print("Couldn't add video device input to the session.")
             setupResult = .configurationFailed
             session.commitConfiguration()
             return
