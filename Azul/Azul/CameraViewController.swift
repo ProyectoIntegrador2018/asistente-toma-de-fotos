@@ -37,10 +37,10 @@ class CameraViewController: UIViewController {
     
     private var angleIndex = 0;
     private let angles: [String] = [
+        "Libre",
         "Pliegue",
         "Enrollado Frente",
-        "Enrollado Lado",
-        "Libre"
+        "Enrollado Lado"
     ]
     
     private var setupResult: SessionSetupResult = .success
