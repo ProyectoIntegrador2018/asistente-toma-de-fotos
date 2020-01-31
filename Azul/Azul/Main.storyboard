@@ -212,7 +212,6 @@
                                 <state key="normal" backgroundImage="circle.lefthalf.fill" catalog="system"/>
                                 <connections>
                                     <action selector="contrastUp:" destination="DES-XN-WH5" eventType="touchUpInside" id="EKa-bp-7dR"/>
-                                    <action selector="contrastUp:" destination="khM-ja-ebN" eventType="touchUpInside" id="cjG-cU-vBP"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hnq-bc-mb6">
