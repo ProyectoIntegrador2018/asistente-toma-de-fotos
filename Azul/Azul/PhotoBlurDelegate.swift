@@ -184,8 +184,10 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             self.blurCgImage = uiImage.cgImage
             let stdDev = self.imageLaplacianVariance(img: uiImage)
             if stdDev <= 20 {
+                self.isBlurry = true;
                 self.blurHandler()
             } else {
+                self.isBlurry = false;
                 self.unBlurHandler()
             }
         }
