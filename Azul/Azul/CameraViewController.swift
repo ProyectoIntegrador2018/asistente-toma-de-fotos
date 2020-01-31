@@ -29,6 +29,8 @@ class CameraViewController: UIViewController {
     private let sessionQueue = DispatchQueue(label: "session queue")
     private var photoData: Data? = nil
     
+    var defaultISO: Float!
+    
     private enum SessionSetupResult {
         case success
         case notAuthorized
@@ -250,6 +252,9 @@ class CameraViewController: UIViewController {
     
     func addVideoInput() {
         self.setVideoDeviceFromDefaultDevice();
+        
+        defaultISO = self.videoDeviceInput.device.iso;
+
         
         if session.canAddInput(videoDeviceInput) {
             session.addInput(videoDeviceInput)
@@ -486,6 +491,37 @@ class CameraViewController: UIViewController {
             editorViewController.imageData = self.photoData
         }
     }
+    
+    
+    @IBAction func resetCamera(_ sender: Any) {
+        do {
+            try self.videoDeviceInput.device.lockForConfiguration()
+            
+            let currentISO = self.videoDeviceInput.device.iso
+            
+            if (currentISO != defaultISO) {
+                self.videoDeviceInput.device.setExposureModeCustom(duration: CMTimeMake(value: 1,timescale: 30), iso: defaultISO, completionHandler: { (time) in
+                })
+            }
+            self.videoDeviceInput.device.unlockForConfiguration()
+        } catch {
+            debugPrint(error)
+        }
+        
+        guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
+         guard device.hasTorch else { return }
+
+         try? device.lockForConfiguration()
+
+         if (device.torchMode == AVCaptureDevice.TorchMode.on) {
+             device.torchMode = AVCaptureDevice.TorchMode.off
+         }
+
+         device.unlockForConfiguration()
+        
+
+    }
+    
     
     
     @IBAction func cycleAngleUp(_ sender: Any) {
