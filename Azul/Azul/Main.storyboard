@@ -20,7 +20,7 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             </view>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="info.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="DIe-IK-2G3" userLabel="Info Icon">
-                                <rect key="frame" x="264" y="0.5" width="96" height="95"/>
+                                <rect key="frame" x="20" y="0.5" width="96" height="95"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="96" id="PmC-gY-LZ3"/>
                                     <constraint firstAttribute="height" constant="96" id="fbj-iR-kCM"/>
@@ -113,8 +113,8 @@
                                 <state key="normal" backgroundImage="xmark.circle.fill" catalog="system"/>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zeq-i2-RRA" userLabel="Message">
-                                <rect key="frame" x="643" y="38" width="80.5" height="41"/>
-                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
+                                <rect key="frame" x="651" y="38" width="64" height="32.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="27"/>
                                 <color key="textColor" systemColor="systemBlueColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -129,7 +129,7 @@
                             <constraint firstAttribute="bottom" secondItem="Zly-WF-fWe" secondAttribute="bottom" id="EEj-t1-BFo"/>
                             <constraint firstAttribute="bottom" secondItem="YRT-Sp-PXJ" secondAttribute="bottom" id="IJx-M2-8Ex"/>
                             <constraint firstItem="Zeq-i2-RRA" firstAttribute="centerX" secondItem="zJE-8K-duR" secondAttribute="centerX" id="J08-P5-h8G"/>
-                            <constraint firstItem="DIe-IK-2G3" firstAttribute="leading" secondItem="zJE-8K-duR" secondAttribute="leadingMargin" constant="244" id="Ng3-0E-q7R"/>
+                            <constraint firstItem="DIe-IK-2G3" firstAttribute="leading" secondItem="zJE-8K-duR" secondAttribute="leadingMargin" id="Ng3-0E-q7R"/>
                             <constraint firstItem="Rvs-98-mkw" firstAttribute="bottom" secondItem="stm-2f-ckh" secondAttribute="bottom" constant="27" id="U5Q-WJ-RMj"/>
                             <constraint firstItem="bEy-Pk-yLx" firstAttribute="leading" secondItem="wKB-SS-5sE" secondAttribute="trailing" constant="183" id="X99-Wn-mvk"/>
                             <constraint firstItem="8Hr-eZ-3d8" firstAttribute="trailing" secondItem="Rvs-98-mkw" secondAttribute="trailing" id="Xcx-J8-Slk"/>
