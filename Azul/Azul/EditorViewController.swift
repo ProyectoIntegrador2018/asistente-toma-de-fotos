@@ -150,10 +150,6 @@ class EditorViewController: UIViewController {
                     DispatchQueue.main.async {
                         self.successfullySavedPhoto()
                     }
-                }, completionHandler: {_, error in
-                    if let error = error {
-                        print("Error occurred while saving photo to photo library: \(error)")
-                    }
                 })
             }
         }
