@@ -20,6 +20,7 @@ class CameraViewController: UIViewController {
         }
     }
     
+    @IBOutlet weak var templateImage: UIImageView!
     @IBOutlet weak var angleType: UILabel!
     @IBOutlet weak var lblMessage: UILabel!
     @IBOutlet weak var previewView: PreviewView!
@@ -44,6 +45,9 @@ class CameraViewController: UIViewController {
         "Enrollado Frente",
         "Enrollado Lado"
     ]
+    private let angleImages: [UIImage?] = [
+        nil, #imageLiteral(resourceName: "pliegue_template"), #imageLiteral(resourceName: "frente_template"), #imageLiteral(resourceName: "lado_template")
+    ]
     
     private var setupResult: SessionSetupResult = .success
     @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
@@ -59,6 +63,7 @@ class CameraViewController: UIViewController {
     
     func loadUIComponents() {
         self.angleType.text = self.angles[self.angleIndex]
+        self.templateImage.image = self.angleImages[self.angleIndex]
         self.spinner = UIActivityIndicatorView(style: .large)
         self.spinner.color = UIColor.yellow
         self.previewView.addSubview(self.spinner)
@@ -530,6 +535,7 @@ class CameraViewController: UIViewController {
             self.angleIndex = self.angles.count - 1
         }
         self.angleType.text = self.angles[self.angleIndex]
+        self.templateImage.image = self.angleImages[self.angleIndex]
     }
     
     
@@ -539,5 +545,6 @@ class CameraViewController: UIViewController {
             self.angleIndex = 0
         }
         self.angleType.text = self.angles[self.angleIndex]
+        self.templateImage.image = self.angleImages[self.angleIndex]
     }
 }
