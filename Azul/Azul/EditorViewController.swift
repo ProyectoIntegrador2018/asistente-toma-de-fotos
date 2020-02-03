@@ -132,14 +132,20 @@ class EditorViewController: UIViewController {
     }
     
     @IBAction func saveImageToCameraRoll(_ sender: Any) {
+        let data = currentImage.image?.pngData()!
+        
         PHPhotoLibrary.requestAuthorization { status in
             if status == .authorized {
                 PHPhotoLibrary.shared().performChanges({
                     let options = PHAssetResourceCreationOptions()
                     let creationRequest = PHAssetCreationRequest.forAsset()
-                    creationRequest.addResource(with: .photo, data: (self.currentImage.image?.pngData())!, options: options)
+                    creationRequest.addResource(with: .photo, data: data!, options: options)
                     
-                    
+                    DispatchQueue.main.async {
+                        let alert = UIAlertController(title: "Finalizado", message: "La imagen se ha guardado exitosamente", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default, handler:nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
                 }, completionHandler: {_, error in
                     if let error = error {
                         print("Error occurred while saving photo to photo library: \(error)")
