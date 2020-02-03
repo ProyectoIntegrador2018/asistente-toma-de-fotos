@@ -131,6 +131,12 @@ class EditorViewController: UIViewController {
         currentImage.image = snapshot(in: currentImage, rect: rect)
     }
     
+    func successfullySavedPhoto() {
+        let alert = UIAlertController(title: "Finalizado", message: "La imagen se ha guardado exitosamente", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler:nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
     @IBAction func saveImageToCameraRoll(_ sender: Any) {
         let data = currentImage.image?.pngData()!
         
@@ -142,9 +148,7 @@ class EditorViewController: UIViewController {
                     creationRequest.addResource(with: .photo, data: data!, options: options)
                     
                     DispatchQueue.main.async {
-                        let alert = UIAlertController(title: "Finalizado", message: "La imagen se ha guardado exitosamente", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: "OK", style: .default, handler:nil))
-                        self.present(alert, animated: true, completion: nil)
+                        self.successfullySavedPhoto()
                     }
                 }, completionHandler: {_, error in
                     if let error = error {
