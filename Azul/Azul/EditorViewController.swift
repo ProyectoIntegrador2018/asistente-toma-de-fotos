@@ -17,6 +17,7 @@ extension CGSize {
 
 class EditorViewController: UIViewController {
 
+    var maskImage: UIImage! = nil
     var imageData: Data?
     var lastPoint = CGPoint.zero
     var startPoint = CGPoint.zero
@@ -42,7 +43,15 @@ class EditorViewController: UIViewController {
         super.viewDidLoad()
         
         currentImage.image = UIImage(data: self.imageData!)
-
+        let mask = CALayer()
+        mask.contents = maskImage.cgImage
+        mask.contentsGravity = .resizeAspect
+        mask.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+        mask.anchorPoint = CGPoint(x:0.5, y:0.5)
+        currentImage.layer.mask = mask
+        currentImage.clipsToBounds = true
+        currentImage.backgroundColor = UIColor.red
+        
         canvas.backgroundColor = UIColor.clear
         
         doneCroppingButton.isEnabled = false
