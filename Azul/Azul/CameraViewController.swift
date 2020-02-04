@@ -29,6 +29,7 @@ class CameraViewController: UIViewController {
     private let session = AVCaptureSession()
     private let sessionQueue = DispatchQueue(label: "session queue")
     private var photoData: Data? = nil
+    private var maskImage: UIImage? = nil
     
     var defaultISO: Float!
     
@@ -49,6 +50,10 @@ class CameraViewController: UIViewController {
         nil, #imageLiteral(resourceName: "pliegue_template"), #imageLiteral(resourceName: "frente_template"), #imageLiteral(resourceName: "lado_template")
     ]
     
+    private let angleMaskImages: [UIImage?] = [
+       nil, #imageLiteral(resourceName: "pliegue_mask"), #imageLiteral(resourceName: "frente_mask"), #imageLiteral(resourceName: "lado_mask")
+    ]
+    
     private var setupResult: SessionSetupResult = .success
     @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
     
@@ -63,7 +68,9 @@ class CameraViewController: UIViewController {
     
     func loadUIComponents() {
         self.angleType.text = self.angles[self.angleIndex]
-        self.templateImage.image = self.angleImages[self.angleIndex]
+        if self.angleImages[self.angleIndex] != nil {
+            self.templateImage.image = self.angleImages[self.angleIndex]
+        }
         self.spinner = UIActivityIndicatorView(style: .large)
         self.spinner.color = UIColor.yellow
         self.previewView.addSubview(self.spinner)
@@ -472,6 +479,9 @@ class CameraViewController: UIViewController {
                     }
                 }
             }, presentEditorViewController: { imageData in
+                if self.angleMaskImages[self.angleIndex] != nil {
+                    self.maskImage = self.angleMaskImages[self.angleIndex]!
+                }
                 self.photoData = imageData
                 self.performSegue(withIdentifier: "editorSegue", sender: nil)
             },
@@ -494,24 +504,22 @@ class CameraViewController: UIViewController {
         self.photoBlurDelegate.freeMemory();
         if let editorViewController = segue.destination as? EditorViewController {
             editorViewController.imageData = self.photoData
+            editorViewController.maskImage = self.maskImage
         }
     }
     
     
     @IBAction func resetCamera(_ sender: Any) {
-        do {
-            try self.videoDeviceInput.device.lockForConfiguration()
-            
-            let currentISO = self.videoDeviceInput.device.iso
-            
-            if (currentISO != defaultISO) {
-                self.videoDeviceInput.device.setExposureModeCustom(duration: CMTimeMake(value: 1,timescale: 30), iso: defaultISO, completionHandler: { (time) in
-                })
-            }
-            self.videoDeviceInput.device.unlockForConfiguration()
-        } catch {
-            debugPrint(error)
+        try? self.videoDeviceInput.device.lockForConfiguration()
+        
+        self.videoDeviceInput.device.setExposureModeCustom(duration: CMTimeMake(value: 1,timescale: 30), iso: defaultISO, completionHandler: { (time) in
+        })
+        
+        if self.videoDeviceInput.device.isExposurePointOfInterestSupported {
+            self.videoDeviceInput.device.exposurePointOfInterest = CGPoint(x: 0, y: 0)
+            self.videoDeviceInput.device.exposureMode = .autoExpose
         }
+        self.videoDeviceInput.device.unlockForConfiguration()
         
         guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
          guard device.hasTorch else { return }
