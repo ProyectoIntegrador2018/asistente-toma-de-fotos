@@ -44,13 +44,23 @@ class EditorViewController: UIViewController {
         
         currentImage.image = UIImage(data: self.imageData!)
         if maskImage != nil {
-            let mask = CALayer()
+            var mask = CALayer()
             mask.contents = maskImage.cgImage
             mask.contentsGravity = .resizeAspect
             mask.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
             mask.anchorPoint = CGPoint(x:0.5, y:0.5)
             currentImage.layer.mask = mask
             currentImage.clipsToBounds = true
+            
+            UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, self.view.isOpaque, 0.0)
+            defer { UIGraphicsEndImageContext() }
+            if let context = UIGraphicsGetCurrentContext() {
+                currentImage.layer.render(in: context)
+                let image = UIGraphicsGetImageFromCurrentImageContext()
+                currentImage.layer.mask = nil
+                currentImage.image = image
+                currentImage.contentMode = .scaleAspectFill
+            }
         }
         
         canvas.backgroundColor = UIColor.clear
@@ -243,13 +253,11 @@ class EditorViewController: UIViewController {
         maxY = CGFloat.leastNormalMagnitude
     }
     
-    // Funcion que me piratie de internet.
     func snapshot(in imageView: UIImageView, rect: CGRect) -> UIImage {
         assert(imageView.contentMode == .scaleAspectFit)
 
         let image = imageView.image!
 
-        // figure out what the scale is
         let imageRatio = imageView.bounds.width / imageView.bounds.height
         let imageViewRatio = image.size.width / image.size.height
 
@@ -260,15 +268,10 @@ class EditorViewController: UIViewController {
             scale = image.size.width / imageView.bounds.width
         }
 
-        // convert the `rect` into coordinates within the image, itself
-
         let size = rect.size * scale
         let origin = CGPoint(x: image.size.width  / 2 - (imageView.bounds.midX - rect.minX) * scale,
                              y: image.size.height / 2 - (imageView.bounds.midY - rect.minY) * scale)
         let scaledRect = CGRect(origin: origin, size: size)
-
-        // now render the image and grab the appropriate rectangle within
-        // the image’s coordinate system
 
         let format = UIGraphicsImageRendererFormat()
         format.scale = image.scale
