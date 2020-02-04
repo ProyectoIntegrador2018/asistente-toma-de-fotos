@@ -25,10 +25,6 @@ class CameraPreviewTouchDelegate : PreviewViewTouchDelegate {
             cameraViewController.videoDeviceInput.device.focusPointOfInterest = focusPoint
             cameraViewController.videoDeviceInput.device.focusMode = .autoFocus
         }
-        if cameraViewController.videoDeviceInput.device.isExposurePointOfInterestSupported {
-            cameraViewController.videoDeviceInput.device.exposurePointOfInterest = focusPoint
-            cameraViewController.videoDeviceInput.device.exposureMode = .autoExpose
-        }
         cameraViewController.videoDeviceInput.device.unlockForConfiguration()
     }
 }
