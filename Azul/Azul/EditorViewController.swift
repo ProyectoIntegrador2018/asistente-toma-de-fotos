@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Photos
 
 extension CGSize {
     static func * (lhs: CGSize, rhs: CGFloat) -> CGSize {
@@ -139,6 +140,29 @@ class EditorViewController: UIViewController {
         currentImage.image = snapshot(in: currentImage, rect: rect)
     }
     
+    func successfullySavedPhoto() {
+        let alert = UIAlertController(title: "Finalizado", message: "La imagen se ha guardado exitosamente", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler:nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    @IBAction func saveImageToCameraRoll(_ sender: Any) {
+        let data = currentImage.image?.pngData()!
+        
+        PHPhotoLibrary.requestAuthorization { status in
+            if status == .authorized {
+                PHPhotoLibrary.shared().performChanges({
+                    let options = PHAssetResourceCreationOptions()
+                    let creationRequest = PHAssetCreationRequest.forAsset()
+                    creationRequest.addResource(with: .photo, data: data!, options: options)
+                    
+                    DispatchQueue.main.async {
+                        self.successfullySavedPhoto()
+                    }
+                })
+            }
+        }
+    }
     // Restart Button - Regresa la imagen a su estado natural.
     @IBAction func restoreImage(_ sender: Any) {
         currentImage.image = UIImage(data: self.imageData!)
