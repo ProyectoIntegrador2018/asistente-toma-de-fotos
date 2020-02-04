@@ -510,24 +510,16 @@ class CameraViewController: UIViewController {
     
     
     @IBAction func resetCamera(_ sender: Any) {
-        do {
-            try self.videoDeviceInput.device.lockForConfiguration()
-            
-            let currentISO = self.videoDeviceInput.device.iso
-            
-            if (currentISO != defaultISO) {
-                self.videoDeviceInput.device.setExposureModeCustom(duration: CMTimeMake(value: 1,timescale: 30), iso: defaultISO, completionHandler: { (time) in
-                })
-            }
-            
-            if self.videoDeviceInput.device.isExposurePointOfInterestSupported {
-                self.videoDeviceInput.device.exposurePointOfInterest = CGPoint(x: 0, y: 0)
-                self.videoDeviceInput.device.exposureMode = .autoExpose
-            }
-            self.videoDeviceInput.device.unlockForConfiguration()
-        } catch {
-            debugPrint(error)
+        try? self.videoDeviceInput.device.lockForConfiguration()
+        
+        self.videoDeviceInput.device.setExposureModeCustom(duration: CMTimeMake(value: 1,timescale: 30), iso: defaultISO, completionHandler: { (time) in
+        })
+        
+        if self.videoDeviceInput.device.isExposurePointOfInterestSupported {
+            self.videoDeviceInput.device.exposurePointOfInterest = CGPoint(x: 0, y: 0)
+            self.videoDeviceInput.device.exposureMode = .autoExpose
         }
+        self.videoDeviceInput.device.unlockForConfiguration()
         
         guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
          guard device.hasTorch else { return }
