@@ -324,12 +324,14 @@ class CameraViewController: UIViewController {
         session.commitConfiguration()
     }
     
+    //Aumenta el brillo modificando el valor de ISO de la cámara
     @IBAction func brightnessUp(_ sender: Any) {
         do {
             try self.videoDeviceInput.device.lockForConfiguration()
-            
+            //Toma el ISO actual
             let currentISO = self.videoDeviceInput.device.iso
-                        
+            
+            //Aumenta el ISO por 100 hasta el valor máximo permitido por el dispositivo
             if (currentISO + 100) < self.videoDeviceInput.device.activeFormat.maxISO {
                 self.videoDeviceInput.device.setExposureModeCustom(duration: CMTimeMake(value: 1,timescale: 30), iso: currentISO + 100, completionHandler: { (time) in
                 })
@@ -359,6 +361,8 @@ class CameraViewController: UIViewController {
         }
     }
     
+    //Al presionar el botón si el flash está apagado se enciende y si esta encendido se apaga
+    
     @IBAction func toggleTorch(_ sender: Any) {
         guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
          guard device.hasTorch else { return }
@@ -375,12 +379,15 @@ class CameraViewController: UIViewController {
         
     }
     
+    //Reduce el brillo modificando el valor de ISO de la cámara
     @IBAction func brightnessDown(_ sender: Any) {
         do {
             try self.videoDeviceInput.device.lockForConfiguration()
             
             let currentISO = self.videoDeviceInput.device.iso
             
+            //Reduce el ISO por 100 hasta el valor mínimo permitido por el dispositivo
+
             if (currentISO - 100) > self.videoDeviceInput.device.activeFormat.minISO {
                 self.videoDeviceInput.device.setExposureModeCustom(duration: CMTimeMake(value: 1,timescale: 30), iso: currentISO - 100, completionHandler: { (time) in
                 })
@@ -508,7 +515,7 @@ class CameraViewController: UIViewController {
         }
     }
     
-    
+    //Regresa los valores originales de brillo de la cámara a su estado original, apaga el flash
     @IBAction func resetCamera(_ sender: Any) {
         try? self.videoDeviceInput.device.lockForConfiguration()
         
