@@ -96,9 +96,7 @@ class CameraViewController: UIViewController {
         super.viewDidLoad()
         previewView.session = session
         switch AVCaptureDevice.authorizationStatus(for: .video) {
-            case .authorized: // The user has previously granted access to the camera.
-                break
-            
+            case .authorized: break
             case .notDetermined: // The user has not yet been asked for camera access.
                 sessionQueue.suspend()
                 AVCaptureDevice.requestAccess(for: .video, completionHandler: { granted in
@@ -111,7 +109,6 @@ class CameraViewController: UIViewController {
                  setupResult = .notAuthorized
             return
         }
-        
         sessionQueue.async {
             self.configureSession()
         }
