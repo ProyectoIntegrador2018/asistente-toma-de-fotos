@@ -294,8 +294,11 @@ class EditorViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
+    
+    //Aumenta el contraste modificando el inputContrast y aplicando el filtro
     @IBAction func contrastUp(_ sender: Any) {
         let inputImage = CIImage(image: self.currentImage.image!)!
+        /*Por cada presión se aumenta el contraste un valor de .1, el máximo siendo 2 */
         let parameters = [
             "inputContrast": NSNumber(value: 1.1)
         ]
@@ -307,9 +310,12 @@ class EditorViewController: UIViewController {
         self.currentImage.image = UIImage(cgImage: img)
     }
     
+    //Reduce el contraste modificando el inputContrast y aplicando el filtro
     @IBAction func contrastDown(_ sender: Any) {
         
         let inputImage = CIImage(image: self.currentImage.image!)!
+        
+        /*Por cada presión se aumenta el contraste un valor de -.1, el mínimo siendo 0 */
         let parameters = [
             "inputContrast": NSNumber(value: 0.9)
         ]
