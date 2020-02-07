@@ -67,6 +67,8 @@ class EditorViewController: UIViewController {
                 currentImage.contentMode = .scaleAspectFill
                 previewImage = image
             }
+        } else {
+            previewImage = currentImage.image
         }
         
         canvas.backgroundColor = UIColor.clear
