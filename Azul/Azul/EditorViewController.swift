@@ -110,6 +110,7 @@ class EditorViewController: UIViewController {
         lastPoint = currentPoint
        }
        
+    //Cada que el usuario deje de oprimir la pantalla. Touch == tocar. Ended == terminar. Pollito == Chicken.
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
            
         if (isCropping == false) {
@@ -141,9 +142,9 @@ class EditorViewController: UIViewController {
         guard let rect = cropRectangle as CGRect? else {
             return
         }
-        
+        // Si existia un rectangulo se desactiva la opcion de dibujar el recuadro
+        // y el boton para terminar de recortar desaparece.
         isCropping = false
-        cropButton.isHighlighted = false
 
         doneCroppingButton.isEnabled = false
         doneCroppingButton.isHidden = true
@@ -151,12 +152,14 @@ class EditorViewController: UIViewController {
         currentImage.image = snapshot(in: currentImage, rect: rect)
     }
     
+    // Crea alerta si la imagen se guardo exitosamente.
     func successfullySavedPhoto() {
         let alert = UIAlertController(title: "Finalizado", message: "La imagen se ha guardado exitosamente", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler:nil))
         self.present(alert, animated: true, completion: nil)
     }
     
+    // Funcion que guarda la imagen en la libreria del dispositivo.
     @IBAction func saveImageToCameraRoll(_ sender: Any) {
         let data = currentImage.image?.pngData()!
         
@@ -167,6 +170,8 @@ class EditorViewController: UIViewController {
                     let creationRequest = PHAssetCreationRequest.forAsset()
                     creationRequest.addResource(with: .photo, data: data!, options: options)
                     
+                    // No se puede llamar nuevos ViewController desde otra thread que
+                    // no sea main. Por eso esta cosa.
                     DispatchQueue.main.async {
                         self.successfullySavedPhoto()
                     }
@@ -225,6 +230,7 @@ class EditorViewController: UIViewController {
         context.setLineWidth(brushWidth)
         context.setStrokeColor(color.cgColor)
           
+        // El rectangulo se crea con base en los puntos minimos y maximos de X e Y.
         let rectangle = CGRect(x: minX - 10, y: minY - 10, width: maxX - minX + 25, height: maxY - minY + 25)
         
         self.cropRectangle = rectangle
@@ -253,6 +259,7 @@ class EditorViewController: UIViewController {
         maxY = CGFloat.leastNormalMagnitude
     }
     
+    // Esta funcion hace el recorte de la imagen con el rectangulo seleccionado.
     func snapshot(in imageView: UIImageView, rect: CGRect) -> UIImage {
         assert(imageView.contentMode == .scaleAspectFit)
 
