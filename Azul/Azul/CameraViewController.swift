@@ -5,6 +5,9 @@
 //  Created by Luis Zul on 1/14/20.
 //  Copyright © 2020 Azul. All rights reserved.
 //
+//  Clase encargada de manejar el input de la cámara,
+//  verificar que la fotografía esté enfocada antes de tomarla y
+//  poder ajustar el brillo y guía de ángulo.
 
 import UIKit
 import AVFoundation
@@ -12,6 +15,7 @@ import Photos
 
 class CameraViewController: UIViewController {
     
+    // Método que maneja el output de la grabación del video.
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         // Enable the Record button to let the user stop recording.
         DispatchQueue.main.async {
@@ -20,12 +24,14 @@ class CameraViewController: UIViewController {
         }
     }
     
+    // UI Components found in Main.storyboard
     @IBOutlet weak var templateImage: UIImageView!
     @IBOutlet weak var angleType: UILabel!
     @IBOutlet weak var lblMessage: UILabel!
     @IBOutlet weak var previewView: PreviewView!
     @IBOutlet weak var btnTakePhoto: UIButton!
     
+    // The capture session is responsible of routing video frames to the preview view of the app.
     private let session = AVCaptureSession()
     private let sessionQueue = DispatchQueue(label: "session queue")
     private var photoData: Data? = nil
@@ -40,16 +46,22 @@ class CameraViewController: UIViewController {
     }
     
     private var angleIndex = 0;
+    // IMPORTANT
+    // Modify these values to change the templates.
+    
+    // Add or remove names as needed.
     private let angles: [String] = [
         "Libre",
         "Pliegue",
         "Enrollado Frente",
         "Enrollado Lado"
     ]
+    // Add or remove guide images as needed.
     private let angleImages: [UIImage?] = [
         nil, #imageLiteral(resourceName: "pliegue_template"), #imageLiteral(resourceName: "frente_template"), #imageLiteral(resourceName: "lado_template")
     ]
     
+    // Add or remove mask images as needed.
     private let angleMaskImages: [UIImage?] = [
        nil, #imageLiteral(resourceName: "pliegue_mask"), #imageLiteral(resourceName: "frente_mask"), #imageLiteral(resourceName: "lado_mask")
     ]
@@ -57,6 +69,7 @@ class CameraViewController: UIViewController {
     private var setupResult: SessionSetupResult = .success
     @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
     
+    // Classes that give us the video and photos we need for the application
     private let photoOutput = AVCapturePhotoOutput()
     private let videoOutput = AVCaptureVideoDataOutput()
     
@@ -66,6 +79,7 @@ class CameraViewController: UIViewController {
     
     // MARK: View Controller Life Cycle
     
+    // Loads the UI components shown in Main.storyboard
     func loadUIComponents() {
         self.angleType.text = self.angles[self.angleIndex]
         if self.angleImages[self.angleIndex] != nil {
@@ -77,13 +91,12 @@ class CameraViewController: UIViewController {
         self.previewView.addTouchDelegate(delegate: CameraPreviewTouchDelegate(controller: self))
     }
     
+    // Method called when the application starts and when you come back from the preview edit view.
     override func viewDidLoad() {
         super.viewDidLoad()
         previewView.session = session
         switch AVCaptureDevice.authorizationStatus(for: .video) {
-            case .authorized: // The user has previously granted access to the camera.
-                break
-            
+            case .authorized: break
             case .notDetermined: // The user has not yet been asked for camera access.
                 sessionQueue.suspend()
                 AVCaptureDevice.requestAccess(for: .video, completionHandler: { granted in
@@ -96,7 +109,6 @@ class CameraViewController: UIViewController {
                  setupResult = .notAuthorized
             return
         }
-        
         sessionQueue.async {
             self.configureSession()
         }
@@ -105,8 +117,12 @@ class CameraViewController: UIViewController {
         }
     }
     
+    // Class that receives a photo and determines it is blurry. Used in real-time to prevent users from taking
+    // blurry photos.
     var photoBlurDelegate: PhotoBlurDelegate! = nil
     
+    // Method called when the user of the app hasn't given the app permission to record or take
+    // photos from the camera.
     func presentNotAuthorizedAlert() {
         let changePrivacySetting = "AVCam doesn't have permission to use the camera, please change privacy settings"
         let message = NSLocalizedString(changePrivacySetting, comment: "Alert message when the user has denied access to the camera")
@@ -127,6 +143,7 @@ class CameraViewController: UIViewController {
         self.present(alertController, animated: true, completion: nil)
     }
     
+    // If anything goes wrong while capturing the video frames and/or photos, this method is called.
     func presentConfigurationWrongAlert() {
         let alertMsg = "Alert message when something goes wrong during capture session configuration"
         let message = NSLocalizedString("Unable to capture media", comment: alertMsg)
@@ -139,6 +156,7 @@ class CameraViewController: UIViewController {
         self.present(alertController, animated: true, completion: nil)
     }
     
+    // Método que siempre se ejecuta al empezar a correr el controlador.
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -154,7 +172,7 @@ class CameraViewController: UIViewController {
                                                     queue: DispatchQueue(label: "sample buffer delegate", attributes: []))
                 // Only setup observers and start the session if setup succeeded.
                 self.session.startRunning()
-                
+                self.resetCamera(self)
             case .notAuthorized:
                 DispatchQueue.main.async {
                     self.presentNotAuthorizedAlert();
@@ -178,12 +196,15 @@ class CameraViewController: UIViewController {
         super.viewWillDisappear(animated)
     }
     
+    // Conectar el input frame por frame de la cámara a la aplicación.
     func addFrameCaptureInput() {
         // Add the frame capture output
         if session.canAddOutput(videoOutput)
         {
             session.addOutput(videoOutput)
             
+            // Este formato lo ocupa PhotoBlurDelegate para calcular el enfoque. Este no es utilizado
+            // al tomar la fotografía.
             var pixelFormat: FourCharCode! = nil;
             if self.videoOutput.availableVideoPixelFormatTypes
                     .contains(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
@@ -209,6 +230,7 @@ class CameraViewController: UIViewController {
         }
     }
     
+    // Conectar la toma de fotografías a la aplicación.
     func addPhotoInput() {
         // Add the photo output.
         if session.canAddOutput(photoOutput) {
@@ -230,6 +252,7 @@ class CameraViewController: UIViewController {
         }
     }
     
+    // Buscar la cámara a conectar por la aplicación, pues varía entre versiones de iPad.
     func setVideoDeviceFromDefaultDevice() {
         do {
             var defaultVideoDevice: AVCaptureDevice?
@@ -262,6 +285,7 @@ class CameraViewController: UIViewController {
         }
     }
     
+    // Conectar la cámara a la aplicación, la cual después conecta la toma de frames y fotografías.
     func addVideoInput() {
         self.setVideoDeviceFromDefaultDevice();
         
@@ -362,7 +386,6 @@ class CameraViewController: UIViewController {
     }
     
     //Al presionar el botón si el flash está apagado se enciende y si esta encendido se apaga
-    
     @IBAction func toggleTorch(_ sender: Any) {
         guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
          guard device.hasTorch else { return }
@@ -420,6 +443,7 @@ class CameraViewController: UIViewController {
     
     private var spinner: UIActivityIndicatorView!
     
+    // Settings para el pre-procesamiento de la cámara.
     func createPhotoSettings() -> AVCapturePhotoSettings {
         var photoSettings = AVCapturePhotoSettings()
         
@@ -445,6 +469,7 @@ class CameraViewController: UIViewController {
         return photoSettings
     }
     
+    // Método que utiliza el botón para tomar la fotografía a almacenar.
     @IBAction func capturePhoto(_ sender: UIButton) {
         let videoPreviewLayerOrientation = previewView.videoPreviewLayer.connection?.videoOrientation
         
@@ -488,6 +513,8 @@ class CameraViewController: UIViewController {
             }, presentEditorViewController: { imageData in
                 if self.angleMaskImages[self.angleIndex] != nil {
                     self.maskImage = self.angleMaskImages[self.angleIndex]!
+                } else {
+                    self.maskImage = nil
                 }
                 self.photoData = imageData
                 self.performSegue(withIdentifier: "editorSegue", sender: nil)
@@ -505,6 +532,7 @@ class CameraViewController: UIViewController {
         }
     }
 
+    // Método que se llama después de tomar la fotografía, llama al editor.
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         videoOutput.setSampleBufferDelegate(nil,
                                             queue: DispatchQueue(label: "sample buffer delegate", attributes: []))
@@ -542,8 +570,7 @@ class CameraViewController: UIViewController {
 
     }
     
-    
-    
+    // Cambia entre las guías de tipo de fotografías definidas al principio de este archivo.
     @IBAction func cycleAngleUp(_ sender: Any) {
         self.angleIndex -= 1
         if self.angleIndex < 0 {
@@ -553,7 +580,7 @@ class CameraViewController: UIViewController {
         self.templateImage.image = self.angleImages[self.angleIndex]
     }
     
-    
+    // Cambia entre las guías de tipo de fotografías definidas al principio de este archivo.
     @IBAction func cycleAngleDown(_ sender: Any) {
         self.angleIndex += 1
         if self.angleIndex >= self.angles.count {

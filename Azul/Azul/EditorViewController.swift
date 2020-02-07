@@ -5,6 +5,9 @@
 //  Created by German Villacorta on 1/21/20.
 //  Copyright © 2020 Azul. All rights reserved.
 //
+//  Vista mostrada después de tomar una fotografía.
+//  Maneja el recorte manual de la imagen, el cambio de contraste
+//  y el almacenamiento de la imagen.
 
 import UIKit
 import Photos
@@ -62,9 +65,9 @@ class EditorViewController: UIViewController {
                 currentImage.layer.mask = nil
                 currentImage.image = image
                 currentImage.contentMode = .scaleAspectFill
-                previewImage = image
             }
         }
+        previewImage = currentImage.image
         
         canvas.backgroundColor = UIColor.clear
         
@@ -264,7 +267,6 @@ class EditorViewController: UIViewController {
     
     // Esta funcion hace el recorte de la imagen con el rectangulo seleccionado.
     func snapshot(in imageView: UIImageView, rect: CGRect) -> UIImage {
-        assert(imageView.contentMode == .scaleAspectFit)
 
         let image = imageView.image!
 

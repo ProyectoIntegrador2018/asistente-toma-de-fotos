@@ -5,6 +5,8 @@
 //  Created by Luis Zul on 1/28/20.
 //  Copyright © 2020 Azul. All rights reserved.
 //
+//  Miembro de PreviewView que se encarga de ejecutar la lógica necesaria
+//  sobre CameraViewController para enfocar la imagen al hacer tap.
 
 import Foundation
 import UIKit
