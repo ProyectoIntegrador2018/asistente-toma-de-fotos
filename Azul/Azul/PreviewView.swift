@@ -5,6 +5,8 @@
 //  Created by Luis Zul on 1/14/20.
 //  Copyright © 2020 Azul. All rights reserved.
 //
+//  Vista que despliega los frames de video de la captura provenientes de la cámara.
+//  su miembro touchDelegate ejecuta acciones cuando haces tap a la vista.
 
 import UIKit
 import AVFoundation

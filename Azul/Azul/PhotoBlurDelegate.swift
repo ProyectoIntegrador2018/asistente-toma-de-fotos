@@ -5,6 +5,10 @@
 //  Created by Luis Zul on 1/28/20.
 //  Copyright © 2020 Azul. All rights reserved.
 //
+//  Lógica para determinar si el frame de captura del video de la cámara
+//  es borroso.
+//  Maneja memoria de forma explícita. Por lo tanto, seguir las recomendaciones en los
+//  comentarios a continuación.
 
 import Accelerate
 import AVFoundation
@@ -13,6 +17,11 @@ import UIKit
 
 class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let context = CIContext()
+    
+    /* NOTA:
+        Los buffers necesitan ser miembros de una clase para evitar ser reciclados por
+        el garbage collector de iOS.
+     */
     
     /*
      The Core Graphics image representation of the source asset.
@@ -48,6 +57,10 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         return UIImage(cgImage: cgImage)
     }
     
+    /* NOTA
+        Siempre verificar si los buffers están llenos con == nil, de lo contario al sobreescribir
+        se ocupa más memoria y/o se rompe la aplicación.
+     */
     func initializeSourceBuffer(img: UIImage) {
         if sourceImageBuffer == nil {
             sourceImageBuffer = try? vImage_Buffer(cgImage: self.blurCgImage,
@@ -71,6 +84,10 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
                              vImage_Flags(kvImageNoFlags))
     }
     
+    /* NOTA
+       Siempre verificar si los buffers están llenos con == nil, de lo contario al sobreescribir
+       se ocupa más memoria y/o se rompe la aplicación.
+    */
     func initializeDestinationBuffer(img: UIImage) {
         if destinationBuffer == nil {
             destinationBuffer = try? vImage_Buffer(width: Int(sourceBuffer.width),
@@ -79,6 +96,7 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         }
     }
     
+    /* Parte del pre-procesamiento para la detección de enfoque es convertir la imagen a escala de grises. */
     func convertToGrayscale() {
         // Declare the three coefficients that model the eye's sensitivity
         // to color.
@@ -112,6 +130,10 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
                                                vImage_Flags(kvImageNoFlags))
     }
     
+    /* NOTA
+       Siempre verificar si los buffers están llenos con == nil, de lo contario al sobreescribir
+       se ocupa más memoria y/o se rompe la aplicación.
+    */
     func createFloatBuffer() {
         let count = Int(destinationBuffer.width) * Int(destinationBuffer.height)
         
@@ -140,6 +162,7 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         }
     }
     
+    /* Pre-procesamiento de la fotografía que determina si la imagen está borrosa o no*/
     func imageLaplacianVariance(img: UIImage) -> Float {
         format = vImage_CGImageFormat(cgImage: self.blurCgImage)
         
@@ -176,6 +199,13 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     }
     
     var isBlurry = false;
+    /* Función llamada cada vez que llega un frame de video de captura,
+        transforma la imagen y obtiene su desviación estándar, la cual
+        se compara para determinar si la imagen está borrosa.
+ 
+        Si la imagen está borrosa, notifica a CameraViewController para que cambie
+        el texto.
+    */
     func captureOutput(_ output: AVCaptureOutput,
                        didOutput sampleBuffer: CMSampleBuffer,
                        from connection: AVCaptureConnection) {
@@ -183,7 +213,7 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         DispatchQueue.main.async { [unowned self] in
             self.blurCgImage = uiImage.cgImage
             let stdDev = self.imageLaplacianVariance(img: uiImage)
-            if stdDev <= 20 {
+            if stdDev <= 30 {
                 self.isBlurry = true;
                 self.blurHandler()
             } else {
@@ -202,6 +232,12 @@ class PhotoBlurDelegate : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         self.unBlurHandler = unBlur;
     }
     
+    /* NOTA:
+        Función muy importante, pues libera la memoria cada vez que salimos de la vista principal de la aplicación.
+        De lo contario, se llena la memoria hasta no poder más, y se rompe la aplicación. Siempre checar si
+        están llenos los buffers con != nil, y siempre liberarlos como en este ejemplo cuando se terminen de utilizar.
+        Si llamas .free() en un buffer que es nil, también da error entonces ten cuidado.
+     */
     public func freeMemory() {
         if sourceBuffer != nil {
             sourceBuffer.free()
