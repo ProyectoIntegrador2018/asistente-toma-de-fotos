@@ -39,6 +39,8 @@ class EditorViewController: UIViewController {
     @IBOutlet weak var cropButton: UIButton!
     @IBOutlet weak var doneCroppingButton: UIButton!
     
+    private var previewImage: UIImage! = nil;
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -60,6 +62,7 @@ class EditorViewController: UIViewController {
                 currentImage.layer.mask = nil
                 currentImage.image = image
                 currentImage.contentMode = .scaleAspectFill
+                previewImage = image
             }
         }
         
@@ -181,7 +184,7 @@ class EditorViewController: UIViewController {
     }
     // Restart Button - Regresa la imagen a su estado natural.
     @IBAction func restoreImage(_ sender: Any) {
-        currentImage.image = UIImage(data: self.imageData!)
+        currentImage.image = previewImage;
     }
     
     // Cancel Button - Regresa a la camara.
