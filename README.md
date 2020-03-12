@@ -2,7 +2,7 @@
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/a369258dd278e6292870/maintainability)](https://codeclimate.com/github/ProyectoIntegrador2018/asistente-toma-de-fotos/maintainability)
 
-Este asistente permite al operador tomar fotografías más claras de defectos en lámina enrollada o lámina extendida.
+Este asistente permite al operador tomar fotografías más claras de defectos en lámina enrollada o lámina extendida y clasifica los defectos segun el estandar de clasificacion de defectos.
 
 ## Tech Stack
 
@@ -14,8 +14,8 @@ Este asistente permite al operador tomar fotografías más claras de defectos en
 
 * [Client Details](#client-details)
 * [Environment URLS](#environment-urls)
-* [Da Team](#da-team)
-* [Instalacion](#instalacion)
+* [The Team](#The-Team)
+* [Instalación](#instalacion)
 * [Deployment](#deployment)
 
 
@@ -31,7 +31,14 @@ Este asistente permite al operador tomar fotografías más claras de defectos en
 * **Production** - [TBD](TBD)
 * **Development** - [TBD](TBD)
 
-### Da Team
+### The Team
+| Name           | Email             | Role        |
+| -------------- | ----------------- | ----------- |
+| Vanessa Narciso | A01332578@itesm.mx | Product Owner Proxy |
+| Jose Arturo Villalobos | A00818214@itesm.mx | Project Manager |
+| Martin Moreno | martingmb@outlook.com | Scrum Master Configuration Manager |
+
+### Da (Old) Team
 
 | Name           | Email             | Role        |
 | -------------- | ----------------- | ----------- |
