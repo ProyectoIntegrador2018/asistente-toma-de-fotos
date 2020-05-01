@@ -19,7 +19,8 @@ extension CGSize {
 }
 
 class EditorViewController: UIViewController {
-
+    
+//   Cropp
     var maskImage: UIImage! = nil
     var imageData: Data?
     var lastPoint = CGPoint.zero
@@ -27,6 +28,12 @@ class EditorViewController: UIViewController {
     var color = UIColor.yellow
     var brushWidth: CGFloat = 5.0
     var opacity: CGFloat = 0.5
+    
+//    Contorno
+    var colorShape = UIColor.red
+    var brushWidthShape : CGFloat = 2.0
+    var opacityShape : CGFloat = 0.9
+    var swiped = false
     
     var minX: CGFloat = CGFloat.greatestFiniteMagnitude
     var maxX: CGFloat = CGFloat.leastNormalMagnitude
@@ -49,7 +56,7 @@ class EditorViewController: UIViewController {
         
         currentImage.image = UIImage(data: self.imageData!)
         if maskImage != nil {
-            var mask = CALayer()
+            let mask = CALayer()
             mask.contents = maskImage.cgImage
             mask.contentsGravity = .resizeAspect
             mask.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
@@ -337,6 +344,12 @@ class EditorViewController: UIViewController {
         let img = context.createCGImage(outputImage, from: outputImage.extent)!
         
         self.currentImage.image = UIImage(cgImage: img)
+    }
+    
+    //    Boton que activa la funcionalidad de que el usuario pueda marcar el contorno del defecto
+    @IBAction func marcarContorno(_ sender: Any) {
+        
+        
     }
     
     
