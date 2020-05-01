@@ -49,7 +49,7 @@ class EditorViewController: UIViewController {
         
         currentImage.image = UIImage(data: self.imageData!)
         if maskImage != nil {
-            var mask = CALayer()
+            let mask = CALayer()
             mask.contents = maskImage.cgImage
             mask.contentsGravity = .resizeAspect
             mask.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
@@ -167,24 +167,45 @@ class EditorViewController: UIViewController {
     
     // Funcion que guarda la imagen en la libreria del dispositivo.
     @IBAction func saveImageToCameraRoll(_ sender: Any) {
-        let data = currentImage.image?.pngData()!
         
-        PHPhotoLibrary.requestAuthorization { status in
-            if status == .authorized {
-                PHPhotoLibrary.shared().performChanges({
-                    let options = PHAssetResourceCreationOptions()
-                    let creationRequest = PHAssetCreationRequest.forAsset()
-                    creationRequest.addResource(with: .photo, data: data!, options: options)
-                    
-                    // No se puede llamar nuevos ViewController desde otra thread que
-                    // no sea main. Por eso esta cosa.
-                    DispatchQueue.main.async {
-                        self.successfullySavedPhoto()
-                    }
-                })
+        let alerta = UIAlertController(title: "¿Deseas guardar esta foto?", message: "Asegurate de que el defecto se vea claramente y que lo hayas marcado", preferredStyle: .alert)
+        
+        let guardarFoto = UIAlertAction(title: "Guardar", style: .default, handler: { (action) -> Void in
+            print("Guardar button tapped")
+            
+            let data = self.currentImage.image?.pngData()!
+            
+            PHPhotoLibrary.requestAuthorization { status in
+                if status == .authorized {
+                    PHPhotoLibrary.shared().performChanges({
+                        let options = PHAssetResourceCreationOptions()
+                        let creationRequest = PHAssetCreationRequest.forAsset()
+                        creationRequest.addResource(with: .photo, data: data!, options: options)
+                        
+                        // No se puede llamar nuevos ViewController desde otra thread que
+                        // no sea main. Por eso esta cosa.
+                        DispatchQueue.main.async {
+                            self.successfullySavedPhoto()
+                        }
+                    })
+                }
             }
-        }
+            
+        })
+        
+        let cancelar = UIAlertAction(title: "Cancelar y Tomar foto nuevamente", style: .cancel, handler: { (action) -> Void in
+            print("Cancel button tapped")
+            self.cancel((Any).self)
+        })
+        
+        alerta.addAction(cancelar)
+        alerta.addAction(guardarFoto)
+        
+        self.present(alerta, animated: true, completion: nil)
+        
     }
+    
+    
     // Restart Button - Regresa la imagen a su estado natural.
     @IBAction func restoreImage(_ sender: Any) {
         currentImage.image = previewImage;
