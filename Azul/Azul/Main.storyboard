@@ -354,14 +354,25 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WlF-ir-hIZ" userLabel="Contorno">
-                                <rect key="frame" x="45" y="866.5" width="96" height="90.5"/>
+                                <rect key="frame" x="45" y="864.5" width="96" height="94"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="96" id="cq9-t6-fYy"/>
                                     <constraint firstAttribute="height" constant="95" id="l0n-IT-nuY"/>
                                 </constraints>
-                                <state key="normal" backgroundImage="pencil" catalog="system"/>
+                                <state key="normal" backgroundImage="pencil.circle" catalog="system"/>
                                 <connections>
                                     <action selector="marcarContorno:" destination="DES-XN-WH5" eventType="touchUpInside" id="3Ju-68-TOR"/>
+                                </connections>
+                            </button>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SQn-WD-JMx" userLabel="Contorno OFF">
+                                <rect key="frame" x="45" y="864.5" width="96" height="94"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="95" id="Ooe-gB-nTf"/>
+                                    <constraint firstAttribute="width" constant="96" id="sMS-2z-1ns"/>
+                                </constraints>
+                                <state key="normal" backgroundImage="pencil.circle.fill" catalog="system"/>
+                                <connections>
+                                    <action selector="desactivaContorno:" destination="DES-XN-WH5" eventType="touchUpInside" id="vnO-Pu-RaY"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -371,6 +382,7 @@
                             <constraint firstItem="xeA-ej-rh7" firstAttribute="leading" secondItem="nrW-iP-LSD" secondAttribute="leading" id="5LP-wd-Ptd"/>
                             <constraint firstItem="nrW-iP-LSD" firstAttribute="bottom" secondItem="YRB-3m-TTL" secondAttribute="bottom" id="6iY-4I-U9Z"/>
                             <constraint firstItem="xeA-ej-rh7" firstAttribute="top" secondItem="nrW-iP-LSD" secondAttribute="top" id="BmJ-Px-BdW"/>
+                            <constraint firstItem="SQn-WD-JMx" firstAttribute="leading" secondItem="nrW-iP-LSD" secondAttribute="leading" constant="45" id="CeD-Ux-TNV"/>
                             <constraint firstItem="Hnq-bc-mb6" firstAttribute="top" secondItem="nrW-iP-LSD" secondAttribute="top" constant="20" id="ERE-L9-EzT"/>
                             <constraint firstItem="xeA-ej-rh7" firstAttribute="centerY" secondItem="Go2-mF-heF" secondAttribute="centerY" id="Fvy-Z3-dqc"/>
                             <constraint firstItem="YRB-3m-TTL" firstAttribute="width" secondItem="FOH-Yk-fIv" secondAttribute="width" id="HbN-OI-fk5"/>
@@ -387,6 +399,7 @@
                             <constraint firstItem="sMv-fY-AsM" firstAttribute="centerX" secondItem="xeA-ej-rh7" secondAttribute="centerX" id="dQ7-i4-ydN"/>
                             <constraint firstItem="hJo-YL-Pqm" firstAttribute="top" secondItem="S1c-6t-I3O" secondAttribute="bottom" constant="-95" id="fyw-Zn-ISt"/>
                             <constraint firstItem="xeA-ej-rh7" firstAttribute="centerY" secondItem="sMv-fY-AsM" secondAttribute="centerY" id="fzT-Co-ccZ"/>
+                            <constraint firstItem="nrW-iP-LSD" firstAttribute="bottom" secondItem="SQn-WD-JMx" secondAttribute="bottom" constant="45" id="gR0-UQ-Yg1"/>
                             <constraint firstItem="S1c-6t-I3O" firstAttribute="top" secondItem="Hnq-bc-mb6" secondAttribute="bottom" constant="264.5" id="l79-0u-Cuf"/>
                             <constraint firstItem="XT1-aL-ray" firstAttribute="top" secondItem="nrW-iP-LSD" secondAttribute="top" constant="20" id="ndo-Ha-Y9v"/>
                             <constraint firstItem="9jD-K1-CGo" firstAttribute="top" secondItem="S1c-6t-I3O" secondAttribute="bottom" constant="87" id="nxs-FY-c18"/>
@@ -402,6 +415,8 @@
                         <outlet property="cropButton" destination="S1c-6t-I3O" id="fek-q7-zYl"/>
                         <outlet property="currentImage" destination="xeA-ej-rh7" id="2Gk-p7-fov"/>
                         <outlet property="doneCroppingButton" destination="9jD-K1-CGo" id="3Vf-LZ-cwg"/>
+                        <outlet property="shapeButton" destination="WlF-ir-hIZ" id="zFr-fi-Q5W"/>
+                        <outlet property="shapeButtonOff" destination="SQn-WD-JMx" id="p1a-Vf-iLr"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xmy-fL-Zj6" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -421,7 +436,8 @@
         <image name="crop" catalog="system" width="128" height="122"/>
         <image name="info.circle.fill" catalog="system" width="128" height="121"/>
         <image name="moon.fill" catalog="system" width="128" height="121"/>
-        <image name="pencil" catalog="system" width="128" height="113"/>
+        <image name="pencil.circle" catalog="system" width="128" height="121"/>
+        <image name="pencil.circle.fill" catalog="system" width="128" height="121"/>
         <image name="sun.max.fill" catalog="system" width="128" height="124"/>
         <image name="tray.and.arrow.down.fill" catalog="system" width="128" height="114"/>
         <image name="xmark.circle.fill" catalog="system" width="128" height="121"/>

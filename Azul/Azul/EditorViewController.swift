@@ -48,6 +48,8 @@ class EditorViewController: UIViewController {
     @IBOutlet weak var canvas: UIImageView!
     @IBOutlet weak var cropButton: UIButton!
     @IBOutlet weak var doneCroppingButton: UIButton!
+    @IBOutlet weak var shapeButton: UIButton!
+    @IBOutlet weak var shapeButtonOff: UIButton!
     
     private var previewImage: UIImage! = nil;
     
@@ -348,8 +350,25 @@ class EditorViewController: UIViewController {
     
     //    Boton que activa la funcionalidad de que el usuario pueda marcar el contorno del defecto
     @IBAction func marcarContorno(_ sender: Any) {
+        shapeButton.isHidden = true
+        shapeButton.isEnabled = false
+        
+        shapeButtonOff.isHidden = false
+        shapeButtonOff.isEnabled = true
+        
+        print("activa")
+    }
+    
+    
+    @IBAction func desactivaContorno(_ sender: Any) {
+        shapeButton.isHidden = false
+        shapeButton.isEnabled = true
+        
+        shapeButtonOff.isHidden = true
+        shapeButtonOff.isEnabled = false
         
         
+        print("desactiva")
     }
     
     
