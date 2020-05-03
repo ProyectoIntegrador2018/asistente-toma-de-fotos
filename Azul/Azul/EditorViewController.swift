@@ -31,7 +31,7 @@ class EditorViewController: UIViewController {
     
 //    Contorno
     var colorShape = UIColor.red
-    var brushWidthShape : CGFloat = 2.0
+    var brushWidthShape : CGFloat = 5.0
     var opacityShape : CGFloat = 0.9
     var swiped = false
     
@@ -42,6 +42,9 @@ class EditorViewController: UIViewController {
     
     var cropRectangle: CGRect?
     var isCropping = false
+    var isShapping = false
+    
+    var merged = false
         
     @IBOutlet weak var currentImage: UIImageView!
     
@@ -87,54 +90,111 @@ class EditorViewController: UIViewController {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
-        if (isCropping == false) {
-            return
-        }
-
-        resetCanvas()
-        resetCropRectangle()
-        
         guard let touch = touches.first else {
           return
         }
+        
+        if (isCropping == false && isShapping == false) {
+            return
+        } else if(isShapping == true){
+            swiped = false
+            resetCanvas()
+            resetCropRectangle()
+            lastPoint = touch.location(in: canvas)
+            startPoint = lastPoint
+        } else if isCropping == true {
+            resetCanvas()
+            resetCropRectangle()
+            
+            
 
-        lastPoint = touch.location(in: canvas)
-        startPoint = lastPoint
+            lastPoint = touch.location(in: canvas)
+            startPoint = lastPoint
+        }
+
+        
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
            
-        if (isCropping == false) {
-            return
-        }
-        
         guard let touch = touches.first else {
             return
         }
+        
+        if (isCropping == false && isShapping == false) {
+            return
+        } else if (isCropping){
+            let currentPoint = touch.location(in: view)
+            drawLine(from: lastPoint, to: currentPoint)
+            
+            //Update mins & maxs para hacer el rectangulo.
+            minX = min(minX, currentPoint.x)
+            minY = min(minY, currentPoint.y)
+            
+            maxX = max(maxX, currentPoint.x)
+            maxY = max(maxY, currentPoint.y)
+            
+            lastPoint = currentPoint
+        } else if(isShapping){
+            swiped = true
+            
+            let currentPoint = touch.location(in: view)
+            drawLine(from: lastPoint, to: currentPoint)
+            
+            //Update mins & maxs para hacer el rectangulo.
+            minX = min(minX, currentPoint.x)
+            minY = min(minY, currentPoint.y)
+            
+            maxX = max(maxX, currentPoint.x)
+            maxY = max(maxY, currentPoint.y)
+              
+            lastPoint = currentPoint
+        }
+        
+        
 
-        let currentPoint = touch.location(in: view)
-        drawLine(from: lastPoint, to: currentPoint)
-               
-        //Update mins & maxs para hacer el rectangulo.
-        minX = min(minX, currentPoint.x)
-        minY = min(minY, currentPoint.y)
-           
-        maxX = max(maxX, currentPoint.x)
-        maxY = max(maxY, currentPoint.y)
-           
-        lastPoint = currentPoint
+        
        }
        
     //Cada que el usuario deje de oprimir la pantalla. Touch == tocar. Ended == terminar. Pollito == Chicken.
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        guard let touch = touches.first else {
+            return
+        }
+        
+        if(isShapping){
+            if !swiped {
+                // draw a single point
+                let currentPoint = touch.location(in: view)
+                drawLine(from: currentPoint, to: startPoint)
+                drawRect()
+                print("!Swiped")
+            }
+            
+            let currentPoint = touch.location(in: view)
+            drawLine(from: currentPoint, to: startPoint)
+            drawRect()
+            
+            // Merge canvas into currentImage
+            UIGraphicsBeginImageContext(currentImage.frame.size)
+            currentImage.image?.draw(in: view.bounds, blendMode: .normal, alpha: 1.0)
+            canvas?.image?.draw(in: view.bounds, blendMode: .normal, alpha: opacity)
+            if !merged{
+            currentImage.image = UIGraphicsGetImageFromCurrentImageContext()
+                merged = true
+            }
+            
+            UIGraphicsEndImageContext()
+              
+            canvas.image = nil
+        }
            
         if (isCropping == false) {
             return
         }
         
-        guard let touch = touches.first else {
-            return
-        }
+        
 
         let currentPoint = touch.location(in: view)
         drawLine(from: currentPoint, to: startPoint)
@@ -144,6 +204,11 @@ class EditorViewController: UIViewController {
     // Crop Button - Empieza a trazar lineas.
     @IBAction func beginCropping(_ sender: Any) {
         isCropping = true
+        isShapping = false
+        shapeButtonOff.isHidden = true
+        shapeButtonOff.isEnabled = false
+        shapeButton.isHidden = true
+        shapeButton.isEnabled = false
         
         cropButton.isHighlighted = true
         
@@ -165,6 +230,9 @@ class EditorViewController: UIViewController {
         doneCroppingButton.isHidden = true
         
         currentImage.image = snapshot(in: currentImage, rect: rect)
+        
+        shapeButton.isHidden = false
+        shapeButton.isEnabled = true
     }
     
     // Crea alerta si la imagen se guardo exitosamente.
@@ -176,32 +244,59 @@ class EditorViewController: UIViewController {
     
     // Funcion que guarda la imagen en la libreria del dispositivo.
     @IBAction func saveImageToCameraRoll(_ sender: Any) {
-        let data = currentImage.image?.pngData()!
-        
-        PHPhotoLibrary.requestAuthorization { status in
-            if status == .authorized {
-                PHPhotoLibrary.shared().performChanges({
-                    let options = PHAssetResourceCreationOptions()
-                    let creationRequest = PHAssetCreationRequest.forAsset()
-                    creationRequest.addResource(with: .photo, data: data!, options: options)
-                    
-                    // No se puede llamar nuevos ViewController desde otra thread que
-                    // no sea main. Por eso esta cosa.
-                    DispatchQueue.main.async {
-                        self.successfullySavedPhoto()
-                    }
-                })
-            }
-        }
+         let alerta = UIAlertController(title: "¿Deseas guardar esta foto?", message: "Asegurate de que el defecto se vea claramente y que lo hayas marcado", preferredStyle: .alert)
+               
+               let guardarFoto = UIAlertAction(title: "Guardar", style: .default, handler: { (action) -> Void in
+                   print("Guardar button tapped")
+                   
+                   let data = self.currentImage.image?.pngData()!
+                   
+                   PHPhotoLibrary.requestAuthorization { status in
+                       if status == .authorized {
+                           PHPhotoLibrary.shared().performChanges({
+                               let options = PHAssetResourceCreationOptions()
+                               let creationRequest = PHAssetCreationRequest.forAsset()
+                               creationRequest.addResource(with: .photo, data: data!, options: options)
+                               
+                               // No se puede llamar nuevos ViewController desde otra thread que
+                               // no sea main. Por eso esta cosa.
+                               DispatchQueue.main.async {
+                                   self.successfullySavedPhoto()
+                               }
+                           })
+                       }
+                   }
+                   
+               })
+               
+               let cancelar = UIAlertAction(title: "Cancelar y Tomar foto nuevamente", style: .cancel, handler: { (action) -> Void in
+                   print("Cancel button tapped")
+                   self.cancel((Any).self)
+               })
+               
+               alerta.addAction(cancelar)
+               alerta.addAction(guardarFoto)
+               
+               self.present(alerta, animated: true, completion: nil)
     }
     // Restart Button - Regresa la imagen a su estado natural.
     @IBAction func restoreImage(_ sender: Any) {
         currentImage.image = previewImage;
+        merged = false
+        isCropping = false
+        isShapping = false
+        shapeButton.isHidden = false
+        shapeButton.isEnabled = true
+        shapeButtonOff.isHidden = true
+        shapeButtonOff.isEnabled = false
+        doneCroppingButton.isHidden = true
+        doneCroppingButton.isEnabled = false
     }
     
     // Cancel Button - Regresa a la camara.
     @IBAction func cancel(_ sender: Any) {
         self.dismiss(animated: false, completion: nil)
+        merged = false
     }
     
     // Funcion para dibujar linea. Draw line == dibujar linea en ingles. Mundo de ingles de Disney.
@@ -215,8 +310,14 @@ class EditorViewController: UIViewController {
         canvas.image?.draw(in: view.bounds)
         
         context.setLineCap(.square)
+        context.setBlendMode(.normal)
         context.setLineWidth(brushWidth)
         context.setStrokeColor(color.cgColor)
+        
+        if(isShapping){
+            context.setLineWidth(brushWidthShape)
+            context.setStrokeColor(colorShape.cgColor)
+        }
         
         context.move(to: fromPoint)
         context.addLine(to: toPoint)
@@ -244,6 +345,11 @@ class EditorViewController: UIViewController {
         context.setLineDash(phase: 3.0, lengths: [10, 10])
         context.setLineWidth(brushWidth)
         context.setStrokeColor(color.cgColor)
+        
+        if(isShapping){
+            context.setLineWidth(brushWidthShape)
+            context.setStrokeColor(colorShape.cgColor)
+        }
           
         // El rectangulo se crea con base en los puntos minimos y maximos de X e Y.
         let rectangle = CGRect(x: minX - 10, y: minY - 10, width: maxX - minX + 25, height: maxY - minY + 25)
@@ -356,6 +462,8 @@ class EditorViewController: UIViewController {
         shapeButtonOff.isHidden = false
         shapeButtonOff.isEnabled = true
         
+        isShapping = true
+        isCropping = false
         print("activa")
     }
     
@@ -367,7 +475,7 @@ class EditorViewController: UIViewController {
         shapeButtonOff.isHidden = true
         shapeButtonOff.isEnabled = false
         
-        
+        isShapping = false
         print("desactiva")
     }
     

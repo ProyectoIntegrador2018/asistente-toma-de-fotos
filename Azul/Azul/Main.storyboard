@@ -329,12 +329,13 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9jD-K1-CGo">
-                                <rect key="frame" x="20" y="561.5" width="96" height="95"/>
+                                <rect key="frame" x="20" y="563" width="96" height="94"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="95" id="iK2-4U-aI9"/>
                                     <constraint firstAttribute="width" constant="96" id="qAG-hH-scO"/>
                                 </constraints>
-                                <state key="normal" title="Recortar">
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <state key="normal" title="Recortar" backgroundImage="rectangle.badge.xmark" catalog="system">
                                     <color key="titleColor" systemColor="linkColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
@@ -438,6 +439,7 @@
         <image name="moon.fill" catalog="system" width="128" height="121"/>
         <image name="pencil.circle" catalog="system" width="128" height="121"/>
         <image name="pencil.circle.fill" catalog="system" width="128" height="121"/>
+        <image name="rectangle.badge.xmark" catalog="system" width="128" height="90"/>
         <image name="sun.max.fill" catalog="system" width="128" height="124"/>
         <image name="tray.and.arrow.down.fill" catalog="system" width="128" height="114"/>
         <image name="xmark.circle.fill" catalog="system" width="128" height="121"/>
