@@ -20,7 +20,6 @@
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="NOb-n9-DvJ">
                                         <rect key="frame" x="25" y="45" width="45" height="50"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="45" id="VKn-wx-jaT"/>
                                             <constraint firstAttribute="height" constant="50" id="dO0-ee-OZn"/>
@@ -28,8 +27,6 @@
                                     </imageView>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="x1P-00-tEq">
                                         <rect key="frame" x="20" y="150" width="55" height="50"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="55" id="gA3-V3-EKK"/>
                                             <constraint firstAttribute="height" constant="50" id="iZY-JR-zyl"/>
@@ -41,7 +38,7 @@
                                             <constraint firstAttribute="width" constant="96" id="PZ1-In-yNW"/>
                                             <constraint firstAttribute="height" constant="95" id="sHq-rT-hcW"/>
                                         </constraints>
-                                        <color key="tintColor" systemColor="linkColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" backgroundImage="arrowshape.turn.up.left.circle" catalog="system"/>
                                         <connections>
                                             <action selector="resetCamera:" destination="khM-ja-ebN" eventType="touchUpInside" id="WHB-on-k31"/>
@@ -132,7 +129,6 @@
                             </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Go-uh-I3d">
                                 <rect key="frame" x="1265" y="35" width="50" height="50"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="4gy-hU-TH8"/>
                                     <constraint firstAttribute="height" constant="50" id="Jtj-PL-iRJ"/>
@@ -140,7 +136,6 @@
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1cy-hB-8HS">
                                 <rect key="frame" x="1016" y="954" width="50" height="50"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="LjK-wN-JeP"/>
                                     <constraint firstAttribute="width" constant="50" id="Ve7-3A-2Sn"/>
@@ -148,7 +143,6 @@
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VE7-ll-cWZ">
                                 <rect key="frame" x="1263" y="939" width="55" height="50"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="55" id="8v1-ZV-2bb"/>
                                     <constraint firstAttribute="height" constant="50" id="I3u-8h-C7Q"/>
@@ -156,7 +150,6 @@
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Xbr-Tr-PGz">
                                 <rect key="frame" x="345" y="954" width="55" height="50"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="IW4-rW-55z"/>
                                     <constraint firstAttribute="width" constant="55" id="NZi-I3-kkb"/>
