@@ -3,10 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		706DC1E5247B5C5E00196DAF /* Instructions in Frameworks */ = {isa = PBXBuildFile; productRef = 706DC1E4247B5C5E00196DAF /* Instructions */; };
+		706DC1E8247B8C1400196DAF /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 706DC1E7247B8C1400196DAF /* Lottie */; };
+		7074E6EA2463BD8F0045CD83 /* Animations in Resources */ = {isa = PBXBuildFile; fileRef = 7074E6E92463BD8F0045CD83 /* Animations */; };
+		DA35EA79CCA9CFAB23B6AF30 /* Pods_Azul.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B162CF002011B5E3F127EEF /* Pods_Azul.framework */; };
 		DB799AD423E0AFBF0054F1F9 /* PhotoBlurDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB799AD323E0AFBF0054F1F9 /* PhotoBlurDelegate.swift */; };
 		DB799AD623E136110054F1F9 /* CameraViewTouchDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB799AD523E136110054F1F9 /* CameraViewTouchDelegate.swift */; };
 		DBD3F8E423CE71F6006B18C4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD3F8E323CE71F6006B18C4 /* AppDelegate.swift */; };
@@ -21,6 +25,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		00826FF13FBB541D714C73DC /* Pods-Azul.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Azul.debug.xcconfig"; path = "Target Support Files/Pods-Azul/Pods-Azul.debug.xcconfig"; sourceTree = "<group>"; };
+		0FA45834E36156FB54B99914 /* Pods-Azul.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Azul.release.xcconfig"; path = "Target Support Files/Pods-Azul/Pods-Azul.release.xcconfig"; sourceTree = "<group>"; };
+		7074E6E92463BD8F0045CD83 /* Animations */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Animations; sourceTree = "<group>"; };
+		9B162CF002011B5E3F127EEF /* Pods_Azul.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Azul.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB799AD323E0AFBF0054F1F9 /* PhotoBlurDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoBlurDelegate.swift; sourceTree = "<group>"; };
 		DB799AD523E136110054F1F9 /* CameraViewTouchDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewTouchDelegate.swift; sourceTree = "<group>"; };
 		DBD3F8E023CE71F6006B18C4 /* Azul.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Azul.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -41,17 +49,39 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA35EA79CCA9CFAB23B6AF30 /* Pods_Azul.framework in Frameworks */,
+				706DC1E5247B5C5E00196DAF /* Instructions in Frameworks */,
+				706DC1E8247B8C1400196DAF /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		36EA71F5B76D81E22C0936D5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9B162CF002011B5E3F127EEF /* Pods_Azul.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		769104768D2DE394DD7D4992 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				00826FF13FBB541D714C73DC /* Pods-Azul.debug.xcconfig */,
+				0FA45834E36156FB54B99914 /* Pods-Azul.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		DBD3F8D723CE71F5006B18C4 = {
 			isa = PBXGroup;
 			children = (
 				DBD3F8E223CE71F6006B18C4 /* Azul */,
 				DBD3F8E123CE71F6006B18C4 /* Products */,
+				769104768D2DE394DD7D4992 /* Pods */,
+				36EA71F5B76D81E22C0936D5 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -66,6 +96,7 @@
 		DBD3F8E223CE71F6006B18C4 /* Azul */ = {
 			isa = PBXGroup;
 			children = (
+				7074E6E92463BD8F0045CD83 /* Animations */,
 				DBD3F8FF23CE810D006B18C4 /* CameraViewController.swift */,
 				DB799AD323E0AFBF0054F1F9 /* PhotoBlurDelegate.swift */,
 				DBD3F8E323CE71F6006B18C4 /* AppDelegate.swift */,
@@ -97,15 +128,21 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DBD3F8F423CE71F7006B18C4 /* Build configuration list for PBXNativeTarget "Azul" */;
 			buildPhases = (
+				80F62CF7D741BC171F0B8D82 /* [CP] Check Pods Manifest.lock */,
 				DBD3F8DC23CE71F5006B18C4 /* Sources */,
 				DBD3F8DD23CE71F5006B18C4 /* Frameworks */,
 				DBD3F8DE23CE71F5006B18C4 /* Resources */,
+				3B6ED7304D496FDFDB5C74BC /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Azul;
+			packageProductDependencies = (
+				706DC1E4247B5C5E00196DAF /* Instructions */,
+				706DC1E7247B8C1400196DAF /* Lottie */,
+			);
 			productName = Azul;
 			productReference = DBD3F8E023CE71F6006B18C4 /* Azul.app */;
 			productType = "com.apple.product-type.application";
@@ -134,6 +171,10 @@
 				Base,
 			);
 			mainGroup = DBD3F8D723CE71F5006B18C4;
+			packageReferences = (
+				706DC1E3247B5C5E00196DAF /* XCRemoteSwiftPackageReference "Instructions" */,
+				706DC1E6247B8C1400196DAF /* XCRemoteSwiftPackageReference "lottie-ios" */,
+			);
 			productRefGroup = DBD3F8E123CE71F6006B18C4 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -148,6 +189,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7074E6EA2463BD8F0045CD83 /* Animations in Resources */,
 				DBD3F8F823CE78EA006B18C4 /* Main.storyboard in Resources */,
 				DBD3F8F023CE71F7006B18C4 /* LaunchScreen.storyboard in Resources */,
 				DBD3F8ED23CE71F7006B18C4 /* Preview Assets.xcassets in Resources */,
@@ -156,6 +198,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3B6ED7304D496FDFDB5C74BC /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Azul/Pods-Azul-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Azul/Pods-Azul-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Azul/Pods-Azul-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		80F62CF7D741BC171F0B8D82 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Azul-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		DBD3F8DC23CE71F5006B18C4 /* Sources */ = {
@@ -302,6 +386,7 @@
 		};
 		DBD3F8F523CE71F7006B18C4 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 00826FF13FBB541D714C73DC /* Pods-Azul.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -323,6 +408,7 @@
 		};
 		DBD3F8F623CE71F7006B18C4 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0FA45834E36156FB54B99914 /* Pods-Azul.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -364,6 +450,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		706DC1E3247B5C5E00196DAF /* XCRemoteSwiftPackageReference "Instructions" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ephread/Instructions";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+		706DC1E6247B8C1400196DAF /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.8;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		706DC1E4247B5C5E00196DAF /* Instructions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 706DC1E3247B5C5E00196DAF /* XCRemoteSwiftPackageReference "Instructions" */;
+			productName = Instructions;
+		};
+		706DC1E7247B8C1400196DAF /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 706DC1E6247B8C1400196DAF /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DBD3F8D823CE71F5006B18C4 /* Project object */;
 }
