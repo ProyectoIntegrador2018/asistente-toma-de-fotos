@@ -263,15 +263,15 @@ class CameraViewController: UIViewController, CoachMarksControllerDataSource, Co
     
     // If anything goes wrong while capturing the video frames and/or photos, this method is called.
     func presentConfigurationWrongAlert() {
-//        let alertMsg = "Alert message when something goes wrong during capture session configuration"
-//        let message = NSLocalizedString("Unable to capture media", comment: alertMsg)
-//        let alertController = UIAlertController(title: "AVCam", message: message, preferredStyle: .alert)
-//        
-//        alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
-//                                                style: .cancel,
-//                                                handler: nil))
-//        
-//        self.present(alertController, animated: true, completion: nil)
+        let alertMsg = "Alert message when something goes wrong during capture session configuration"
+        let message = NSLocalizedString("Unable to capture media", comment: alertMsg)
+        let alertController = UIAlertController(title: "AVCam", message: message, preferredStyle: .alert)
+        
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
+                                                style: .cancel,
+                                                handler: nil))
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
     // Método que siempre se ejecuta al empezar a correr el controlador.
@@ -317,35 +317,35 @@ class CameraViewController: UIViewController, CoachMarksControllerDataSource, Co
     // Conectar el input frame por frame de la cámara a la aplicación.
     func addFrameCaptureInput() {
         // Add the frame capture output
-//        if session.canAddOutput(videoOutput)
-//        {
-//            session.addOutput(videoOutput)
-//
-//            // Este formato lo ocupa PhotoBlurDelegate para calcular el enfoque. Este no es utilizado
-//            // al tomar la fotografía.
-//            var pixelFormat: FourCharCode! = nil;
-//            if self.videoOutput.availableVideoPixelFormatTypes
-//                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
-//                pixelFormat = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
-//            } else if self.videoOutput.availableVideoPixelFormatTypes
-//                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
-//                pixelFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
-//            } else {
-//                fatalError("No available YpCbCr formats.")
-//            }
-//            videoOutput.videoSettings["PixelFormatType"] = pixelFormat;
-//
-//
-//            if let videoOutputConnection = self.videoOutput.connection(with: .video) {
-//                videoOutputConnection.videoOrientation = .landscapeLeft
-//                videoOutputConnection.isVideoMirrored = true
-//            }
-//        } else {
-//            print("Could not add frame output to the session")
-//            setupResult = .configurationFailed
-//            session.commitConfiguration()
-//            return
-//        }
+        if session.canAddOutput(videoOutput)
+        {
+            session.addOutput(videoOutput)
+
+            // Este formato lo ocupa PhotoBlurDelegate para calcular el enfoque. Este no es utilizado
+            // al tomar la fotografía.
+            var pixelFormat: FourCharCode! = nil;
+            if self.videoOutput.availableVideoPixelFormatTypes
+                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
+                pixelFormat = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+            } else if self.videoOutput.availableVideoPixelFormatTypes
+                    .contains(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
+                pixelFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+            } else {
+                fatalError("No available YpCbCr formats.")
+            }
+            videoOutput.videoSettings["PixelFormatType"] = pixelFormat;
+
+
+            if let videoOutputConnection = self.videoOutput.connection(with: .video) {
+                videoOutputConnection.videoOrientation = .landscapeLeft
+                videoOutputConnection.isVideoMirrored = true
+            }
+        } else {
+            print("Could not add frame output to the session")
+            setupResult = .configurationFailed
+            session.commitConfiguration()
+            return
+        }
     }
     
     // Conectar la toma de fotografías a la aplicación.
@@ -407,37 +407,37 @@ class CameraViewController: UIViewController, CoachMarksControllerDataSource, Co
     func addVideoInput() {
         self.setVideoDeviceFromDefaultDevice();
         
-//        defaultISO = self.videoDeviceInput.device.iso;
+        defaultISO = self.videoDeviceInput.device.iso;
 
         
-//        if session.canAddInput(videoDeviceInput) {
-//            session.addInput(videoDeviceInput)
-//
-//            DispatchQueue.main.async {
-//                /*
-//                 Dispatch video streaming to the main queue because AVCaptureVideoPreviewLayer is the backing layer for PreviewView.
-//                 You can manipulate UIView only on the main thread.
-//                 Note: As an exception to the above rule, it's not necessary to serialize video orientation changes
-//                 on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
-//
-//                 Use the window scene's orientation as the initial video orientation. Subsequent orientation changes are
-//                 handled by CameraViewController.viewWillTransition(to:with:).
-//                 */
-//                var initialVideoOrientation: AVCaptureVideoOrientation = .portrait
-//                if self.windowOrientation != .unknown {
-//                    if let videoOrientation = AVCaptureVideoOrientation(rawValue: self.windowOrientation.rawValue) {
-//                        initialVideoOrientation = videoOrientation
-//                    }
-//                }
-//
-//                self.previewView.videoPreviewLayer.connection?.videoOrientation = initialVideoOrientation
-//            }
-//        } else {
-//            print("Couldn't add video device input to the session.")
-//            setupResult = .configurationFailed
-//            session.commitConfiguration()
-//            return
-//        }
+        if session.canAddInput(videoDeviceInput) {
+            session.addInput(videoDeviceInput)
+
+            DispatchQueue.main.async {
+                /*
+                 Dispatch video streaming to the main queue because AVCaptureVideoPreviewLayer is the backing layer for PreviewView.
+                 You can manipulate UIView only on the main thread.
+                 Note: As an exception to the above rule, it's not necessary to serialize video orientation changes
+                 on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
+
+                 Use the window scene's orientation as the initial video orientation. Subsequent orientation changes are
+                 handled by CameraViewController.viewWillTransition(to:with:).
+                 */
+                var initialVideoOrientation: AVCaptureVideoOrientation = .portrait
+                if self.windowOrientation != .unknown {
+                    if let videoOrientation = AVCaptureVideoOrientation(rawValue: self.windowOrientation.rawValue) {
+                        initialVideoOrientation = videoOrientation
+                    }
+                }
+
+                self.previewView.videoPreviewLayer.connection?.videoOrientation = initialVideoOrientation
+            }
+        } else {
+            print("Couldn't add video device input to the session.")
+            setupResult = .configurationFailed
+            session.commitConfiguration()
+            return
+        }
     }
     
     // MARK: Session Management
