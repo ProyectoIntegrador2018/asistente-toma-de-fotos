@@ -231,11 +231,6 @@ class CameraViewController: UIViewController, CoachMarksControllerDataSource, Co
                     defaults.set(true, forKey: "NeedWalkThrough")
                 }))
             
-//            alert.addAction(UIAlertAction(title: "No me vuelvas a mostrar esto", style: .destructive, handler: { (actionAlert) in
-//                defaults.set(true, forKey: "NeedWalkThrough")
-//
-//            }))
-            
             self.present(alert, animated: true, completion: nil)
         }
     }
