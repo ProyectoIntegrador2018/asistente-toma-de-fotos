@@ -12,8 +12,57 @@
 import UIKit
 import AVFoundation
 import Photos
+import Lottie
+import Instructions
 
-class CameraViewController: UIViewController {
+class CameraViewController: UIViewController, CoachMarksControllerDataSource, CoachMarksControllerDelegate {
+    
+    
+    func coachMarksController(_ coachMarksController: CoachMarksController, coachMarkViewsAt index: Int, madeFrom coachMark: CoachMark) -> (bodyView: (UIView & CoachMarkBodyView), arrowView: (UIView & CoachMarkArrowView)?) {
+        let coachViews = coachMarksController.helper.makeDefaultCoachViews(withArrow: true, arrowOrientation: coachMark.arrowOrientation)
+        
+        coachViews.bodyView.hintLabel.text = hintLabels[index]
+        coachViews.bodyView.nextLabel.text = nextLabels[index]
+        
+        switch index {
+        case 0:
+            pointOfInterest = brightnessView
+            resetView.isHidden = true
+        case 1:
+            pointOfInterest = birghtnessDownView
+            brightnessView.isHidden = true
+        case 2:
+            pointOfInterest = flashView
+            birghtnessDownView.isHidden = true
+        case 3:
+            pointOfInterest = guideUpView
+            flashView.isHidden = true
+        case 4:
+            pointOfInterest = guideDownView
+            guideUpView.isHidden = true
+        case 5:
+            pointOfInterest = photoView
+            guideDownView.isHidden = true
+        case 6:
+            pointOfInterest = resetView
+            guideDownView.isHidden = true
+        default:
+            pointOfInterest = resetView
+        }
+        
+        return (bodyView: coachViews.bodyView, arrowView: coachViews.arrowView)
+    }
+    
+    func coachMarksController(_ coachMarksController: CoachMarksController, coachMarkAt index: Int) -> CoachMark {
+        return coachMarksController.helper.makeCoachMark(for: pointOfInterest)
+    }
+    
+    func numberOfCoachMarks(for coachMarksController: CoachMarksController) -> Int {
+        return 7
+    }
+    
+    
+    
     
     // Método que maneja el output de la grabación del video.
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
@@ -30,6 +79,39 @@ class CameraViewController: UIViewController {
     @IBOutlet weak var lblMessage: UILabel!
     @IBOutlet weak var previewView: PreviewView!
     @IBOutlet weak var btnTakePhoto: UIButton!
+    
+    var pointOfInterest = UIView()
+    let coachMarksController = CoachMarksController()
+    
+    // UIView for walkthrough
+    @IBOutlet weak var resetView: UIView!
+    @IBOutlet weak var brightnessView: UIView!
+    @IBOutlet weak var birghtnessDownView: UIView!
+    @IBOutlet weak var flashView: UIView!
+    @IBOutlet weak var guideUpView: UIView!
+    @IBOutlet weak var guideDownView: UIView!
+    @IBOutlet weak var photoView: UIView!
+    
+    
+    private let nextLabels = [
+        0: "Reset",
+        1: "Brillo",
+        2: "Brillo",
+        3: "Flash",
+        4: "Guia Fotografica",
+        5: "Guia Fotografica",
+        6: "Foto"
+    ]
+    
+    private let hintLabels = [
+        0: "Restaura los valores originales de brillo y apaga el flash",
+        1: "Aumenta el brillo de la camara",
+        2: "Reduce el brillo de la camara",
+        3: "Activa o desactiva el flash de la camara",
+        4: "Cicla las diferentes guias fotograficas",
+        5: "Cicla las diferentes guias fotograficas",
+        6: "Captura una foto de la camara"
+    ]
     
     // The capture session is responsible of routing video frames to the preview view of the app.
     private let session = AVCaptureSession()
@@ -91,10 +173,18 @@ class CameraViewController: UIViewController {
         self.previewView.addTouchDelegate(delegate: CameraPreviewTouchDelegate(controller: self))
     }
     
+    func startWalkthrough() {
+        self.coachMarksController.start(in: .window(over: self))
+    }
+    
     // Method called when the application starts and when you come back from the preview edit view.
     override func viewDidLoad() {
         super.viewDidLoad()
         previewView.session = session
+        self.coachMarksController.dataSource = self
+        self.coachMarksController.delegate = self
+        self.coachMarksController.overlay.isUserInteractionEnabled = true
+        pointOfInterest = resetView
         switch AVCaptureDevice.authorizationStatus(for: .video) {
             case .authorized: break
             case .notDetermined: // The user has not yet been asked for camera access.
@@ -114,6 +204,34 @@ class CameraViewController: UIViewController {
         }
         DispatchQueue.main.async {
             self.loadUIComponents();
+        }
+    }
+    
+    func checkFirstLaunch() -> Bool {
+        let defaults = UserDefaults.standard
+        if let _ = defaults.string(forKey: "firstLaunch") {
+            return true
+        } else {
+            defaults.set(true, forKey: "firstLaunch")
+            return false
+        }
+    }
+    
+      override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        let defaults = UserDefaults.standard
+        if checkFirstLaunch() == true && defaults.bool(forKey: "NeedWalkThrough") == false {
+            let alert = UIAlertController(title: "Bienvenido!", message: "Te gustaria iniciar el tutorial?", preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(UIAlertAction(title: "Si", style: .default, handler: { (actionAlert) in
+                    self.startWalkthrough()
+                    defaults.set(false, forKey: "NeedWalkThrough")
+                }))
+            
+            alert.addAction(UIAlertAction(title: "No", style: .destructive, handler: { (actionAlert) in
+                    defaults.set(true, forKey: "NeedWalkThrough")
+                }))
+            
+            self.present(alert, animated: true, completion: nil)
         }
     }
     
@@ -192,7 +310,7 @@ class CameraViewController: UIViewController {
                 self.session.stopRunning()
             }
         }
-        
+        self.coachMarksController.stop(immediately: true)
         super.viewWillDisappear(animated)
     }
     
@@ -202,7 +320,7 @@ class CameraViewController: UIViewController {
         if session.canAddOutput(videoOutput)
         {
             session.addOutput(videoOutput)
-            
+
             // Este formato lo ocupa PhotoBlurDelegate para calcular el enfoque. Este no es utilizado
             // al tomar la fotografía.
             var pixelFormat: FourCharCode! = nil;
@@ -216,8 +334,8 @@ class CameraViewController: UIViewController {
                 fatalError("No available YpCbCr formats.")
             }
             videoOutput.videoSettings["PixelFormatType"] = pixelFormat;
-            
-            
+
+
             if let videoOutputConnection = self.videoOutput.connection(with: .video) {
                 videoOutputConnection.videoOrientation = .landscapeLeft
                 videoOutputConnection.isVideoMirrored = true
@@ -294,14 +412,14 @@ class CameraViewController: UIViewController {
         
         if session.canAddInput(videoDeviceInput) {
             session.addInput(videoDeviceInput)
-            
+
             DispatchQueue.main.async {
                 /*
                  Dispatch video streaming to the main queue because AVCaptureVideoPreviewLayer is the backing layer for PreviewView.
                  You can manipulate UIView only on the main thread.
                  Note: As an exception to the above rule, it's not necessary to serialize video orientation changes
                  on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
-                 
+
                  Use the window scene's orientation as the initial video orientation. Subsequent orientation changes are
                  handled by CameraViewController.viewWillTransition(to:with:).
                  */
@@ -311,7 +429,7 @@ class CameraViewController: UIViewController {
                         initialVideoOrientation = videoOrientation
                     }
                 }
-                
+
                 self.previewView.videoPreviewLayer.connection?.videoOrientation = initialVideoOrientation
             }
         } else {
